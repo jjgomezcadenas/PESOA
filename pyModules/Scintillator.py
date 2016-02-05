@@ -111,6 +111,13 @@ class Scintillator(object):
     """
     pass
 
+  #@abstractmethod      
+  def PhotoelectricEfficiencyAt511KeV(self,Z):
+    """
+    Fraction of gammas of energy E 511 keV interacting in thickness Z
+    """
+    return self.EfficiencyAt511KeV(Z)*self.PhotoelectricFractionAt511KeV()
+
   @abstractmethod
   def ScintillationPhotonsAt511KeV(self):
     """
