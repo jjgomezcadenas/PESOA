@@ -31,6 +31,7 @@ class ATimeMap(AAlgo):
 		self.debug = self.ints["Debug"]  #used to stop program at key break points
 
   		self.SCINT = self.strings["SCINTILLATOR"]
+  		self.BIN = self.doubles["BIN"] #time bin in the simulation in ps
   		self.QE = self.doubles["QE"]  #quantum efficiency
   		self.DTMAX = self.doubles["DTMAX"]*ps  #max diff wrt first pes
   		self.SPTR = self.doubles["SPTR"]*ps  #single photon time resolution
@@ -155,6 +156,10 @@ class ATimeMap(AAlgo):
 
 		ng1 = 0
 		ng2 = 0
+
+#                for w in sensorhits[0].GetWaveform().GetData():
+#                    print "%s \t %s" % (w.first,w.second)
+
 		for hit in sensorhits:
 			hid = hit.GetSensorID()
 			xh = hit.GetPosition().x()
@@ -170,7 +175,8 @@ class ATimeMap(AAlgo):
 			
 			timeBin0 = waveform[0]
 			tbin = timeBin0.first
-			time0 = tbin*5*ps
+			#time0 = tbin*5*ps
+			time0 = tbin*self.BIN*ps
 
 			sipmhit = SiPMHit(hid,xh,yh,zh,Ah,time0,
 				self.QE,self.SPTR,self.ASIC,self.DTMAX)
