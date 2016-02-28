@@ -34,6 +34,11 @@ class DTOFAVG(AAlgo):
 		self.npe = self.ints["NPE"]  #number of pe to avg
 		self.dts = self.vints["DTs"]  # time windows to avg
 
+		self.xres = self.doubles["XRES"]  #X resolution
+		self.yres = self.doubles["YRES"]  #X resolution
+		self.zres = self.doubles["ZRES"]  #X resolution
+
+
 		#load coordinates of box and fiducial box
 
 		if self.SCINT == "LXE":
@@ -133,6 +138,20 @@ class DTOFAVG(AAlgo):
 
 		dpg = tpath2 - tpath1
 
+                #Smear vertex if needed
+                dpgSmear = 0
+                if self.xres > 0 or self.yres > 0 or self.zres > 0:
+                    vertex1 = SmearVertex(vertexBox1.XYZ(),self.xres, self.yres, self.zres)
+                    vertex2 = SmearVertex(vertexBox2.XYZ(),self.xres, self.yres, self.zres)
+
+                    dbox1Smear = distance(siPMHit1.XYZ(),vertex1)
+                    tpath1Smear = dbox1*self.scint.RefractionIndex()/c_light
+                    dbox2Smear = distance(siPMHit2.XYZ(),vertex2)
+                    tpath2Smear = dbox2*self.scint.RefractionIndex()/c_light
+
+                    dpgSmear = tpath2Smear - tpath1Smear
+
+
                 t1 = 0
                 t2 = 0
                 TimeMapBox1 = self.sortedTimeMap[0]
@@ -145,8 +164,15 @@ class DTOFAVG(AAlgo):
                     dt  = (t2 - t1) / (i+1)
                     dtof = 0.5*(dt - dtg - dpg)
 
+                    self.hman.fill(self.dtof1[i],dtof/ps)
                     self.hman.fill(self.dtof2[i],dtof/ps)
                     self.hman.fill(self.dtof3[i],dtof/ps)
+
+                    if self.xres > 0 or self.yres > 0 or self.zres > 0:
+                        dtofSmear = 0.5*(dt - dtg - dpgSmear)
+                        self.hman.fill(self.dtof1_res[i],dtofSmear/ps)
+                        self.hman.fill(self.dtof2_res[i],dtofSmear/ps)
+                        self.hman.fill(self.dtof3_res[i],dtofSmear/ps)
 
                 #Compute AVG within DT
                 time0_Box1 = TimeMapBox1[0][0]
@@ -173,8 +199,15 @@ class DTOFAVG(AAlgo):
                     dt  = (t2s[j] - t1s[j]) / nphotons[j]
                     dtof = 0.5*(dt - dtg - dpg)
 
+                    self.hman.fill(self.dtof1_dt[j],dtof/ps)
                     self.hman.fill(self.dtof2_dt[j],dtof/ps)
                     self.hman.fill(self.dtof3_dt[j],dtof/ps)
+
+                    if self.xres > 0 or self.yres > 0 or self.zres > 0:
+                        dtofSmear = 0.5*(dt - dtg - dpgSmear)
+                        self.hman.fill(self.dtof1_dt_res[j],dtofSmear/ps)
+                        self.hman.fill(self.dtof2_dt_res[j],dtofSmear/ps)
+                        self.hman.fill(self.dtof3_dt_res[j],dtofSmear/ps)
                     
 
 	############################################################		
@@ -183,25 +216,55 @@ class DTOFAVG(AAlgo):
 		book the histograms for the algo 
 		"""
 
+                self.dtof1 = []
                 self.dtof2 = []
                 self.dtof3 = []
 
                 for i in range(self.npe):
+                    histName = "DTOF1N" + str(i+1) 
+	            self.dtof1.append(self.defineHisto(histName,histName,1,[50],[-500],[500]))
                     histName = "DTOF2N" + str(i+1) 
 	            self.dtof2.append(self.defineHisto(histName,histName,1,[80],[-200],[200]))
                     histName = "DTOF3N" + str(i+1) 
 	            self.dtof3.append(self.defineHisto(histName,histName,1,[80],[-100],[100]))
 
 
+                self.dtof1_dt = []
                 self.dtof2_dt = []
                 self.dtof3_dt = []
 
                 for i in self.dts:
+                    histName = "DTOF1_DT" + str(i) 
+	            self.dtof1_dt.append(self.defineHisto(histName,histName,1,[50],[-500],[500]))
                     histName = "DTOF2_DT" + str(i) 
 	            self.dtof2_dt.append(self.defineHisto(histName,histName,1,[80],[-200],[200]))
                     histName = "DTOF3_DT" + str(i) 
 	            self.dtof3_dt.append(self.defineHisto(histName,histName,1,[80],[-100],[100]))
 
+                if self.xres > 0 or self.yres > 0 or self.zres > 0:
+                    self.dtof1_res = []
+                    self.dtof2_res = []
+                    self.dtof3_res = []
+                    self.dtof1_dt_res = []
+                    self.dtof2_dt_res = []
+                    self.dtof3_dt_res = []
+    
+                    for i in range(self.npe):
+                        histName = "SmearDTOF1N" + str(i+1) 
+                        self.dtof1_res.append(self.defineHisto(histName,histName,1,[50],[-500],[500]))
+                        histName = "SmearDTOF2N" + str(i+1) 
+                        self.dtof2_res.append(self.defineHisto(histName,histName,1,[80],[-200],[200]))
+                        histName = "SmearDTOF3N" + str(i+1) 
+        	        self.dtof3_res.append(self.defineHisto(histName,histName,1,[80],[-100],[100]))
+
+                    for i in self.dts:
+                        histName = "SmearDTOF1_DT" + str(i) 
+    	                self.dtof1_dt_res.append(self.defineHisto(histName,histName,1,[50],[-500],[500]))
+                        histName = "SmearDTOF2_DT" + str(i) 
+    	                self.dtof2_dt_res.append(self.defineHisto(histName,histName,1,[80],[-200],[200]))
+                        histName = "SmearDTOF3_DT" + str(i) 
+    	                self.dtof3_dt_res.append(self.defineHisto(histName,histName,1,[80],[-100],[100]))
+                    
 
 	############################################################
 	def defineHisto(self,histoName,histoTitle,histoType,nbin,xmin,xmax):

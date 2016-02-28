@@ -38,6 +38,15 @@ def SmearTime(time,SPTR,ctrASIC):
 	stime+= rnd.gauss(0, ctrASIC)
 	return stime 
 
+###########################################################
+def SmearVertex((x,y,z),xres,yres,zres):
+	"""
+	Smears position to take into account space resolution
+	"""
+	x = x + rnd.gauss(0, xres)
+	y = y + rnd.gauss(0, yres)
+	z = z + rnd.gauss(0, zres)
+	return (x,y,z)
 
 ###########################################################
 class SiPMHit(object):
