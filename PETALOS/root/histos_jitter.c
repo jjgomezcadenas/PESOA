@@ -1,12 +1,8 @@
-void histos_pde(){
-	gStyle->SetOptFit(1);
-	gStyle->SetOptStat(1110);
-
+void histos_jitter(){
 	std::string material[3] = {"lxe","lxe_tpb","lyso"};
 	std::string interaction[3] = {"","_noCher","_noScint"};
 
 	double sigmas[3][3][20]; // [mat][inter][pde]
-	double errors[3][3][20]; // [mat][inter][pde]
 	double pdeValues[20];
 	char pde[5];
 
@@ -28,16 +24,16 @@ void histos_pde(){
 					sprintf(pde, "0%.2lf", i/100.0);
 				}
 
-				std::string path = "/home/jmbenlloch/next/petalo/work/histo/pde/";
-				std::string fileName = path + material[mat] + interaction[inter] + std::string("_PHYS_QE_") + std::string(pde) + std::string("_SPTR_0_ASIC_0_DT300_histos.root"); std::string(Form("%d", 1));
+				std::string path = "/home/jmbenlloch/next/petalo/work/histo/jitter/";
+				std::string fileName = path + material[mat] + interaction[inter] + std::string("_PHYS_QE_") + std::string(pde) + std::string("_SPTR_80_ASIC_30_DT300_histos.root"); std::string(Form("%d", 1));
 				std::cout << fileName << std::endl;
 
 				TFile *fIn = new TFile(fileName.c_str(), "read");
 
 				TH1F *h1 = (TH1F*) fIn->Get("DTOF.DTOF2");
-				TF1* gauF1 = new TF1("gauF1","gaus",-100,100);
-	//			h1->Scale(1/h1->Integral(), "width");
-				h1->Fit("gauF1","","e",-200,200);
+				TF1* gauF1 = new TF1("gauF1","gaus",-200,200);
+				h1->Scale(1/h1->Integral(), "width");
+				h1->Fit("gauF1","","e",-70,70);
 				h1->Draw();
 
 				std::string histo = path + material[mat] + interaction[inter] + std::string("_pde_") + pde + std::string(".png");
@@ -46,7 +42,6 @@ void histos_pde(){
 
 				std::cout << "PDE: " << pde << "sigma: "  << h1->GetFunction("gauF1")->GetParameter(2) << std::endl;
 				sigmas[mat][inter][i/5-1] = h1->GetFunction("gauF1")->GetParameter(2);
-				errors[mat][inter][i/5-1] = h1->GetFunction("gauF1")->GetParError(2);
 
 				fIn->Close();
 			}
@@ -67,29 +62,13 @@ void histos_pde(){
 	gLyso->SetLineColor(kGreen);
 	gLyso->SetLineWidth(2);
 
-	std::cout << "LXe: ";
-	for(int i=0;i<20;i++){
-		std::cout << sigmas[0][0][i] << ", ";
-	}
-	std::cout << std::endl;
-	std::cout << "TPB: ";
-	for(int i=0;i<20;i++){
-		std::cout << sigmas[1][0][i] << ", ";
-	}
-	std::cout << std::endl;
-	std::cout << "LYSO: ";
-	for(int i=0;i<20;i++){
-		std::cout << sigmas[2][0][i] << ", ";
-	}
-	std::cout << std::endl;
-
 	gLyso->Draw();
 	gLyso->SetTitle("");
 	gLyso->GetXaxis().SetTitle("PDE (%)");
 	gLyso->GetXaxis()->SetLimits(0.,100.);
 	gLyso->GetYaxis().SetTitle("CRT (ps)");
 	gLyso->SetMinimum(0.);
-	gLyso->SetMaximum(100.);
+	gLyso->SetMaximum(150.);
 	gTpb->Draw("same");
 	gLxe->Draw("same");
 
@@ -100,14 +79,7 @@ void histos_pde(){
 	leg->AddEntry(gLyso, "LYSO", "lp");
 	leg->Draw("same");
 
-	c2->Print("/home/jmbenlloch/next/petalo/work/histo/pde/pde.png");
-
-	TCanvas *c4 = new TCanvas("c4","multipads",900,700);
-	TGraphErrors *gLxeErrors = new TGraphErrors(20, pdeValues, sigmas[0][0], 0, errors[0][0]);
-	gLxeErrors->SetMinimum(0.);
-	gLxeErrors->SetMaximum(200.);
-	gLxeErrors->Draw();
-	c4->Print("/home/jmbenlloch/next/petalo/work/histo/pde/pdeErrors.png");
+	c2->Print("/home/jmbenlloch/next/petalo/work/histo/jitter/jitter.png");
 
 
 	TCanvas *c3 = new TCanvas("c3","multipads",900,700);
@@ -129,7 +101,7 @@ void histos_pde(){
 	gLyso_noCher->GetXaxis()->SetLimits(0.,100.);
 	gLyso_noCher->GetYaxis().SetTitle("CRT (ps)");
 	gLyso_noCher->SetMinimum(0.);
-	gLyso_noCher->SetMaximum(100.);
+	gLyso_noCher->SetMaximum(150.);
 	gTpb_noCher->Draw("same");
 	gLxe_noCher->Draw("same");
 
@@ -140,6 +112,6 @@ void histos_pde(){
 	leg_noCher->AddEntry(gLyso, "LYSO", "lp");
 	leg_noCher->Draw("same");
 
-	c3->Print("/home/jmbenlloch/next/petalo/work/histo/pde/pde_noCher.png");
+	c3->Print("/home/jmbenlloch/next/petalo/work/histo/jitter/jitter_noCher.png");
 
 }
