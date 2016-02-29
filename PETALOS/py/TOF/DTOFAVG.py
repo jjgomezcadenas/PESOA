@@ -145,12 +145,11 @@ class DTOFAVG(AAlgo):
                     vertex2 = SmearVertex(vertexBox2.XYZ(),self.xres, self.yres, self.zres)
 
                     dbox1Smear = distance(siPMHit1.XYZ(),vertex1)
-                    tpath1Smear = dbox1*self.scint.RefractionIndex()/c_light
+                    tpath1Smear = dbox1Smear*self.scint.RefractionIndex()/c_light
                     dbox2Smear = distance(siPMHit2.XYZ(),vertex2)
-                    tpath2Smear = dbox2*self.scint.RefractionIndex()/c_light
+                    tpath2Smear = dbox2Smear*self.scint.RefractionIndex()/c_light
 
                     dpgSmear = tpath2Smear - tpath1Smear
-
 
                 t1 = 0
                 t2 = 0

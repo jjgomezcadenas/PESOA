@@ -1,8 +1,12 @@
 void histos_jitter(){
+	gStyle->SetOptFit(1);
+	gStyle->SetOptStat(1110);
+
 	std::string material[3] = {"lxe","lxe_tpb","lyso"};
 	std::string interaction[3] = {"","_noCher","_noScint"};
 
 	double sigmas[3][3][20]; // [mat][inter][pde]
+	double errors[3][3][20]; // [mat][inter][pde]
 	double pdeValues[20];
 	char pde[5];
 
@@ -25,15 +29,15 @@ void histos_jitter(){
 				}
 
 				std::string path = "/home/jmbenlloch/next/petalo/work/histo/jitter/";
-				std::string fileName = path + material[mat] + interaction[inter] + std::string("_PHYS_QE_") + std::string(pde) + std::string("_SPTR_80_ASIC_30_DT300_histos.root"); std::string(Form("%d", 1));
+				std::string fileName = path + material[mat] + interaction[inter] + std::string("_QE_") + std::string(pde) + std::string("_SPTR_80_ASIC_30_DT300_histos.root"); std::string(Form("%d", 1));
 				std::cout << fileName << std::endl;
 
 				TFile *fIn = new TFile(fileName.c_str(), "read");
 
 				TH1F *h1 = (TH1F*) fIn->Get("DTOF.DTOF2");
-				TF1* gauF1 = new TF1("gauF1","gaus",-200,200);
-				h1->Scale(1/h1->Integral(), "width");
-				h1->Fit("gauF1","","e",-70,70);
+				TF1* gauF1 = new TF1("gauF1","gaus",-100,100);
+	//			h1->Scale(1/h1->Integral(), "width");
+				h1->Fit("gauF1","","e",-200,200);
 				h1->Draw();
 
 				std::string histo = path + material[mat] + interaction[inter] + std::string("_pde_") + pde + std::string(".png");
@@ -42,6 +46,7 @@ void histos_jitter(){
 
 				std::cout << "PDE: " << pde << "sigma: "  << h1->GetFunction("gauF1")->GetParameter(2) << std::endl;
 				sigmas[mat][inter][i/5-1] = h1->GetFunction("gauF1")->GetParameter(2);
+				errors[mat][inter][i/5-1] = h1->GetFunction("gauF1")->GetParError(2);
 
 				fIn->Close();
 			}
@@ -50,17 +55,33 @@ void histos_jitter(){
 	c1->Close();
 
 	TCanvas *c2 = new TCanvas("c2","multipads",900,700);
-	TGraph *gLxe = new TGraph(20, pdeValues, sigmas[0][0]);
+	TGraphErrors *gLxe = new TGraphErrors(20, pdeValues, sigmas[0][0], 0, errors[0][0]);
 	gLxe->SetLineColor(kRed);
 	gLxe->SetLineWidth(2);
 
-	TGraph *gTpb = new TGraph(20, pdeValues, sigmas[1][0]);
+	TGraphErrors *gTpb = new TGraphErrors(20, pdeValues, sigmas[1][0], 0, errors[1][0]);
 	gTpb->SetLineColor(kBlue);
 	gTpb->SetLineWidth(2);
 
-	TGraph *gLyso = new TGraph(20, pdeValues, sigmas[2][0]);
+	TGraphErrors *gLyso = new TGraphErrors(20, pdeValues, sigmas[2][0], 0, errors[2][0]);
 	gLyso->SetLineColor(kGreen);
 	gLyso->SetLineWidth(2);
+
+	std::cout << "LXe: ";
+	for(int i=0;i<20;i++){
+		std::cout << sigmas[0][0][i] << ", ";
+	}
+	std::cout << std::endl;
+	std::cout << "TPB: ";
+	for(int i=0;i<20;i++){
+		std::cout << sigmas[1][0][i] << ", ";
+	}
+	std::cout << std::endl;
+	std::cout << "LYSO: ";
+	for(int i=0;i<20;i++){
+		std::cout << sigmas[2][0][i] << ", ";
+	}
+	std::cout << std::endl;
 
 	gLyso->Draw();
 	gLyso->SetTitle("");
@@ -81,17 +102,24 @@ void histos_jitter(){
 
 	c2->Print("/home/jmbenlloch/next/petalo/work/histo/jitter/jitter.png");
 
+/*	TCanvas *c4 = new TCanvas("c4","multipads",900,700);
+	TGraphErrors *gLxeErrors = new TGraphErrors(20, pdeValues, sigmas[0][0], 0, errors[0][0]);
+	gLxeErrors->SetMinimum(0.);
+	gLxeErrors->SetMaximum(200.);
+	gLxeErrors->Draw();
+	c4->Print("/home/jmbenlloch/next/petalo/work/histo/jitter/pdeErrors.png");*/
+
 
 	TCanvas *c3 = new TCanvas("c3","multipads",900,700);
-	TGraph *gLxe_noCher = new TGraph(20, pdeValues, sigmas[0][1]);
+	TGraphErrors *gLxe_noCher = new TGraphErrors(20, pdeValues, sigmas[0][1], 0, errors[0][1]);
 	gLxe_noCher->SetLineColor(kRed);
 	gLxe_noCher->SetLineWidth(2);
 
-	TGraph *gTpb_noCher = new TGraph(20, pdeValues, sigmas[1][1]);
+	TGraphErrors *gTpb_noCher = new TGraphErrors(20, pdeValues, sigmas[1][1], 0, errors[1][1]);
 	gTpb_noCher->SetLineColor(kBlue);
 	gTpb_noCher->SetLineWidth(2);
 
-	TGraph *gLyso_noCher = new TGraph(20, pdeValues, sigmas[2][1]);
+	TGraphErrors *gLyso_noCher = new TGraphErrors(20, pdeValues, sigmas[2][1], 0, errors[2][1]);
 	gLyso_noCher->SetLineColor(kGreen);
 	gLyso_noCher->SetLineWidth(2);
 

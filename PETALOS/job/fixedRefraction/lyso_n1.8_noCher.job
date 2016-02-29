@@ -29,7 +29,7 @@ CNTJob LEVEL I 1
 
 #--------- DATA -------#
 CNTJob INPUT_DATA SV 1
-/home/jmbenlloch/next/petalo/data/LYSO_3mm_xy2.4cm_z5cm_noCher.pet
+/home/jmbenlloch/next/petalo/data/LYSO_VUV3mm_xy2.4cm_z5cm_noCher.pet
 
 #--------- DATA READER -------#
 CNTJob READER S gateReader

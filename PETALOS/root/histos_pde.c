@@ -29,7 +29,7 @@ void histos_pde(){
 				}
 
 				std::string path = "/home/jmbenlloch/next/petalo/work/histo/pde/";
-				std::string fileName = path + material[mat] + interaction[inter] + std::string("_PHYS_QE_") + std::string(pde) + std::string("_SPTR_0_ASIC_0_DT300_histos.root"); std::string(Form("%d", 1));
+				std::string fileName = path + material[mat] + interaction[inter] + std::string("_QE_") + std::string(pde) + std::string("_SPTR_0_ASIC_0_DT300_histos.root"); std::string(Form("%d", 1));
 				std::cout << fileName << std::endl;
 
 				TFile *fIn = new TFile(fileName.c_str(), "read");
@@ -55,15 +55,15 @@ void histos_pde(){
 	c1->Close();
 
 	TCanvas *c2 = new TCanvas("c2","multipads",900,700);
-	TGraph *gLxe = new TGraph(20, pdeValues, sigmas[0][0]);
+	TGraphErrors *gLxe = new TGraphErrors(20, pdeValues, sigmas[0][0], 0, errors[0][0]);
 	gLxe->SetLineColor(kRed);
 	gLxe->SetLineWidth(2);
 
-	TGraph *gTpb = new TGraph(20, pdeValues, sigmas[1][0]);
+	TGraphErrors *gTpb = new TGraphErrors(20, pdeValues, sigmas[1][0], 0, errors[1][0]);
 	gTpb->SetLineColor(kBlue);
 	gTpb->SetLineWidth(2);
 
-	TGraph *gLyso = new TGraph(20, pdeValues, sigmas[2][0]);
+	TGraphErrors *gLyso = new TGraphErrors(20, pdeValues, sigmas[2][0], 0, errors[2][0]);
 	gLyso->SetLineColor(kGreen);
 	gLyso->SetLineWidth(2);
 
@@ -89,7 +89,7 @@ void histos_pde(){
 	gLyso->GetXaxis()->SetLimits(0.,100.);
 	gLyso->GetYaxis().SetTitle("CRT (ps)");
 	gLyso->SetMinimum(0.);
-	gLyso->SetMaximum(100.);
+	gLyso->SetMaximum(150.);
 	gTpb->Draw("same");
 	gLxe->Draw("same");
 
@@ -102,24 +102,24 @@ void histos_pde(){
 
 	c2->Print("/home/jmbenlloch/next/petalo/work/histo/pde/pde.png");
 
-	TCanvas *c4 = new TCanvas("c4","multipads",900,700);
+/*	TCanvas *c4 = new TCanvas("c4","multipads",900,700);
 	TGraphErrors *gLxeErrors = new TGraphErrors(20, pdeValues, sigmas[0][0], 0, errors[0][0]);
 	gLxeErrors->SetMinimum(0.);
 	gLxeErrors->SetMaximum(200.);
 	gLxeErrors->Draw();
-	c4->Print("/home/jmbenlloch/next/petalo/work/histo/pde/pdeErrors.png");
+	c4->Print("/home/jmbenlloch/next/petalo/work/histo/pde/pdeErrors.png");*/
 
 
 	TCanvas *c3 = new TCanvas("c3","multipads",900,700);
-	TGraph *gLxe_noCher = new TGraph(20, pdeValues, sigmas[0][1]);
+	TGraphErrors *gLxe_noCher = new TGraphErrors(20, pdeValues, sigmas[0][1], 0, errors[0][1]);
 	gLxe_noCher->SetLineColor(kRed);
 	gLxe_noCher->SetLineWidth(2);
 
-	TGraph *gTpb_noCher = new TGraph(20, pdeValues, sigmas[1][1]);
+	TGraphErrors *gTpb_noCher = new TGraphErrors(20, pdeValues, sigmas[1][1], 0, errors[1][1]);
 	gTpb_noCher->SetLineColor(kBlue);
 	gTpb_noCher->SetLineWidth(2);
 
-	TGraph *gLyso_noCher = new TGraph(20, pdeValues, sigmas[2][1]);
+	TGraphErrors *gLyso_noCher = new TGraphErrors(20, pdeValues, sigmas[2][1], 0, errors[2][1]);
 	gLyso_noCher->SetLineColor(kGreen);
 	gLyso_noCher->SetLineWidth(2);
 
@@ -129,7 +129,7 @@ void histos_pde(){
 	gLyso_noCher->GetXaxis()->SetLimits(0.,100.);
 	gLyso_noCher->GetYaxis().SetTitle("CRT (ps)");
 	gLyso_noCher->SetMinimum(0.);
-	gLyso_noCher->SetMaximum(100.);
+	gLyso_noCher->SetMaximum(150.);
 	gTpb_noCher->Draw("same");
 	gLxe_noCher->Draw("same");
 
