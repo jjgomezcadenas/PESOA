@@ -73,6 +73,7 @@ DTOF
 #--------- Algo PARAMS -------#
 DTOF Debug I 0
 DTOF SCINTILLATOR S LXE
+DTOF INTER S CHER
 DTOF VLEVEL I 3
 
 ATimeMap Debug I 0
@@ -233,6 +234,7 @@ AFiducial FBox2V8 DV 3
 
 NFirst Debug I 0
 NFirst SCINTILLATOR S LXE
+NFirst INTER S CHER
 NFirst Range D 200
 NFirst TimesPE IV 1
 1

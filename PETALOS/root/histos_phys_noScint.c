@@ -15,9 +15,9 @@ void histos_phys_noScint(){
 	h2->Scale(1/h2->Integral(), "width");
 	h3->Scale(1/h3->Integral(), "width");
 
-	h1->Fit("gauF1","","e",-20,20);
-	h2->Fit("gauF2","","e",-20,20);
-	h3->Fit("gauF3","","e",-15,15);
+	h1->Fit("gauF1","","e",-100,100);
+	h2->Fit("gauF2","","e",-100,100);
+	h3->Fit("gauF3","","e",-100,100);
 
 	plot(h1,h2,h3);
 	plot_combined(h1,h2,h3);

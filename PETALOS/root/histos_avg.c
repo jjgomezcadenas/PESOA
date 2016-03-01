@@ -15,11 +15,11 @@ void histos_avg(){
 	files[2][0] = "lyso_QE_01.00_SPTR_80_ASIC_30_DT300_histos.root";
 	files[2][1] = "lyso_noCher_QE_01.00_SPTR_80_ASIC_30_DT300_histos.root";
 
-	double sigmasNPE[3][2][2][5]; // [mat][inter][smear][npe]
-	double errorsNPE[3][2][2][5]; // [mat][inter][smear][npe]
+	double sigmasNPE[3][2][2][10]; // [mat][inter][smear][npe]
+	double errorsNPE[3][2][2][10]; // [mat][inter][smear][npe]
 	double sigmasDT[3][2][2][8]; // [mat][inter]]smear][dt]
 	double errorsDT[3][2][2][8]; // [mat][inter][smear][dt]
-	int npes[5] = {1,2,3,4,5};
+	int npes[10] = {1,2,3,4,5,6,7,8,9,10};
     int dts[8] = {10,20,50,100,150,200,250,300};
 	char pde[5];
 
@@ -28,7 +28,7 @@ void histos_avg(){
 	for(int mat=0; mat<3;mat++){
 		for(int inter=0; inter<2;inter++){
 			for(int smear=0; smear<2;smear++){
-				for(int npe=0;npe<5;npe++){
+				for(int npe=0;npe<10;npe++){
 
 					std::string fileName = filepath + files[mat][inter];
 					std::cout << fileName << std::endl;
@@ -112,19 +112,19 @@ void histos_avg(){
 	std::cout << std::endl;
 
 	// NPE
-	double npesD[5] = {1,2,3,4,5};
+	double npesD[10] = {1,2,3,4,5,6,7,8,9,10};
 	for(int inter=0; inter<2;inter++){
 		for(int smear=0; smear<2;smear++){
 			TCanvas *c2 = new TCanvas("c2","multipads",900,700);
-			TGraphErrors *gLxe = new TGraphErrors(5, npesD, sigmasNPE[0][inter][smear], 0, errorsNPE[0][inter][smear]);
+			TGraphErrors *gLxe = new TGraphErrors(10, npesD, sigmasNPE[0][inter][smear], 0, errorsNPE[0][inter][smear]);
 			gLxe->SetLineColor(kRed);
 			gLxe->SetLineWidth(2);
 
-			TGraphErrors *gTpb = new TGraphErrors(5, npesD, sigmasNPE[1][inter][smear], 0, errorsNPE[1][inter][smear]);
+			TGraphErrors *gTpb = new TGraphErrors(10, npesD, sigmasNPE[1][inter][smear], 0, errorsNPE[1][inter][smear]);
 			gTpb->SetLineColor(kBlue);
 			gTpb->SetLineWidth(2);
 
-			TGraphErrors *gLyso = new TGraphErrors(5, npesD, sigmasNPE[2][inter][smear], 0, errorsNPE[2][inter][smear]);
+			TGraphErrors *gLyso = new TGraphErrors(10, npesD, sigmasNPE[2][inter][smear], 0, errorsNPE[2][inter][smear]);
 			gLyso->SetLineColor(kGreen);
 			gLyso->SetLineWidth(2);
 
@@ -160,17 +160,17 @@ void histos_avg(){
 			c2->Close();
 
 			std::cout << "NPE sigmaLXE " << interName << smearName << ": ";
-			for(int i=0;i<5;i++){
+			for(int i=0;i<10;i++){
 				std::cout << sigmasNPE[0][inter][smear][i] << ", ";
 			}
 			std::cout << std::endl;
 			std::cout << "NPE sigmaTPB " << interName << smearName << ": ";
-			for(int i=0;i<5;i++){
+			for(int i=0;i<10;i++){
 				std::cout << sigmasNPE[0][inter][smear][i] << ", ";
 			}
 			std::cout << std::endl;
 			std::cout << "NPE sigmaLYSO " << interName << smearName << ": ";
-			for(int i=0;i<5;i++){
+			for(int i=0;i<10;i++){
 				std::cout << sigmasNPE[0][inter][smear][i] << ", ";
 			}
 			std::cout << std::endl;

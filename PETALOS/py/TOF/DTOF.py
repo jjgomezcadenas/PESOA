@@ -30,13 +30,19 @@ class DTOF(AAlgo):
 		
 		self.debug = self.ints["Debug"]  #used to stop program at key break points
 		self.SCINT = self.strings["SCINTILLATOR"]
+		self.INTER = self.strings["INTER"] # cher or scint
 
 		#load coordinates of box and fiducial box
 
 		if self.SCINT == "LXE":
 			self.scint = LXe() #lxe properties
+                        if self.INTER ==  "CHER":
+                            self.vel = 0.14/ps
+                        else:
+                            self.vel = 0.0886/ps
 		elif self.SCINT == "LYSO":
 			self.scint = LYSO()
+                        self.vel = c_light/self.scint.RefractionIndex()
 		else:
 			print "scintillator not yet implemented"
 			sys.exit()
@@ -127,9 +133,15 @@ class DTOF(AAlgo):
 		dtg = vertexBox2.t - vertexBox1.t
 		
 		dbox1 = distance(siPMHit1.XYZ(),vertexBox1.XYZ())
-		tpath1 = dbox1*self.scint.RefractionIndex()/c_light
+		#tpath1 = dbox1*self.scint.RefractionIndex()/c_light
+		tpath1old = dbox1*self.scint.RefractionIndex()/c_light
+                tpath1 = dbox1 * 1/self.vel
+                #print "%s - %s" % (tpath1,tpath1old)
 		dbox2 = distance(siPMHit2.XYZ(),vertexBox2.XYZ())
-		tpath2 = dbox2*self.scint.RefractionIndex()/c_light
+		#tpath2 = dbox2*self.scint.RefractionIndex()/c_light
+		tpath2old = dbox2*self.scint.RefractionIndex()/c_light
+                tpath2 = dbox2 * 1/self.vel
+                #print "%s - %s" % (tpath2,tpath2old)
 
 		dpg = tpath2 - tpath1
 

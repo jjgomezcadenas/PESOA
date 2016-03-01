@@ -30,6 +30,7 @@ class DTOFAVG(AAlgo):
 		
 		self.debug = self.ints["Debug"]  #used to stop program at key break points
 		self.SCINT = self.strings["SCINTILLATOR"]
+		self.INTER = self.strings["INTER"] # cher or scint
 
 		self.npe = self.ints["NPE"]  #number of pe to avg
 		self.dts = self.vints["DTs"]  # time windows to avg
@@ -43,8 +44,13 @@ class DTOFAVG(AAlgo):
 
 		if self.SCINT == "LXE":
 			self.scint = LXe() #lxe properties
+                        if self.INTER ==  "CHER":
+                            self.vel = 0.14/ps
+                        else:
+                            self.vel = 0.0886/ps
 		elif self.SCINT == "LYSO":
 			self.scint = LYSO()
+                        self.vel = c_light/self.scint.RefractionIndex()
 		else:
 			print "scintillator not yet implemented"
 			sys.exit()
@@ -132,9 +138,11 @@ class DTOFAVG(AAlgo):
 		dtg = vertexBox2.t - vertexBox1.t
 		
 		dbox1 = distance(siPMHit1.XYZ(),vertexBox1.XYZ())
-		tpath1 = dbox1*self.scint.RefractionIndex()/c_light
+		#tpath1 = dbox1*self.scint.RefractionIndex()/c_light
+                tpath1 = dbox1 * 1/self.vel
 		dbox2 = distance(siPMHit2.XYZ(),vertexBox2.XYZ())
-		tpath2 = dbox2*self.scint.RefractionIndex()/c_light
+		#tpath2 = dbox2*self.scint.RefractionIndex()/c_light
+                tpath2 = dbox2 * 1/self.vel
 
 		dpg = tpath2 - tpath1
 
@@ -145,9 +153,11 @@ class DTOFAVG(AAlgo):
                     vertex2 = SmearVertex(vertexBox2.XYZ(),self.xres, self.yres, self.zres)
 
                     dbox1Smear = distance(siPMHit1.XYZ(),vertex1)
-                    tpath1Smear = dbox1Smear*self.scint.RefractionIndex()/c_light
+                    #tpath1Smear = dbox1Smear*self.scint.RefractionIndex()/c_light
+                    tpath1Smear = dbox1Smear*1/self.vel
                     dbox2Smear = distance(siPMHit2.XYZ(),vertex2)
-                    tpath2Smear = dbox2Smear*self.scint.RefractionIndex()/c_light
+                    #tpath2Smear = dbox2Smear*self.scint.RefractionIndex()/c_light
+                    tpath2Smear = dbox2Smear*1/self.vel
 
                     dpgSmear = tpath2Smear - tpath1Smear
 

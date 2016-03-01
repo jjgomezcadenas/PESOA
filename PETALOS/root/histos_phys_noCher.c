@@ -4,7 +4,7 @@ void histos_phys_noCher(){
     TFile *fIn3 = new TFile("/home/jmbenlloch/next/petalo/work/histo/LYSO_VUV3mm_xy2.4cm_z5cm_PHYS_noCher_QE_1_SPTR_0_ASIC_0_DT300_histos.root", "read");
 
     TH1F *h1 = (TH1F*) fIn1->Get("DTOF.DTOF3");
-    TH1F *h2 = (TH1F*) fIn2->Get("DTOF.DTOF3");
+    TH1F *h2 = (TH1F*) fIn2->Get("DTOF.DTOF2");
     TH1F *h3 = (TH1F*) fIn3->Get("DTOF.DTOF3");
 
 	TF1* gauF1 = new TF1("gauF1","gaus",-100,100);
@@ -15,9 +15,9 @@ void histos_phys_noCher(){
 	h2->Scale(1/h2->Integral(), "width");
 	h3->Scale(1/h3->Integral(), "width");
 
-	h1->Fit("gauF1","","e",-20,20);
-	h2->Fit("gauF2","","e",-20,20);
-	h3->Fit("gauF3","","e",-15,15);
+	h1->Fit("gauF1","","e",-100,100);
+	h2->Fit("gauF2","","e",-100,100);
+	h3->Fit("gauF3","","e",-100,100);
 
 	plot(h1,h2,h3);
 	plot_combined(h1,h2,h3);

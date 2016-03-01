@@ -33,13 +33,19 @@ class NFirst(AAlgo):
                 self.histoRange = self.doubles["Range"] #upper limits histograms
 
 		self.SCINT = self.strings["SCINTILLATOR"]
+		self.INTER = self.strings["INTER"] # cher or scint
 
 		#load coordinates of box and fiducial box
 
 		if self.SCINT == "LXE":
 			self.scint = LXe() #lxe properties
+                        if self.INTER ==  "CHER":
+                            self.vel = 0.14/ps
+                        else:
+                            self.vel = 0.0886/ps
 		elif self.SCINT == "LYSO":
 			self.scint = LYSO()
+                        self.vel = c_light/self.scint.RefractionIndex()
 		else:
 			print "scintillator not yet implemented"
 			sys.exit()
@@ -147,10 +153,12 @@ class NFirst(AAlgo):
                     sipmHit2 = TimeMapBox2[i-1][1]
 
                     dbox1 = distance(sipmHit1.XYZ(),vertexBox1.XYZ())
-                    tpath1 = dbox1*self.scint.RefractionIndex()/c_light
+                    #tpath1 = dbox1*self.scint.RefractionIndex()/c_light
+                    tpath1 = dbox1 * 1/self.vel
 
         	    dbox2 = distance(sipmHit2.XYZ(),vertexBox2.XYZ())
-        	    tpath2 = dbox2*self.scint.RefractionIndex()/c_light
+        	    #tpath2 = dbox2*self.scint.RefractionIndex()/c_light
+                    tpath2 = dbox2 * 1/self.vel
 
 		    timePeBox1 = TimeMapBox1[i-1][0] - tpath1 - vertexBox1.t
 		    timePeBox2 = TimeMapBox2[i-1][0] - tpath2 - vertexBox2.t

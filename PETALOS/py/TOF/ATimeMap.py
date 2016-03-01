@@ -54,8 +54,13 @@ class ATimeMap(AAlgo):
 
 		if self.SCINT == "LXE":
 			self.scint = LXe() #lxe properties
+                        if self.INTER ==  "CHER":
+                            self.vel = 0.14/ps
+                        else:
+                            self.vel = 0.0886/ps
 		elif self.SCINT == "LYSO":
 			self.scint = LYSO()
+                        self.vel = c_light/self.scint.RefractionIndex()
 		else:
 			print "scintillator not yet implemented"
 			sys.exit()
@@ -195,9 +200,11 @@ class ATimeMap(AAlgo):
 				sys.exit(0)
 			
 			dbox1 = distance(sipmhit.XYZ(),vertexBox1.XYZ())
-			tpath1 = dbox1*self.scint.RefractionIndex()/c_light
+			#tpath1 = dbox1*self.scint.RefractionIndex()/c_light
+                        tpath1 = dbox1 * 1/self.vel
 			dbox2 = distance(sipmhit.XYZ(),vertexBox2.XYZ())
-			tpath2 = dbox2*self.scint.RefractionIndex()/c_light
+			#tpath2 = dbox2*self.scint.RefractionIndex()/c_light
+                        tpath2 = dbox2 * 1/self.vel
 
 			# keep all the pes within DTMAX (~300 ps) of first pe
 			np=0

@@ -134,9 +134,9 @@ void plotCRT(TFile *fIn1, TFile* fIn2, TFile* fIn3){
 	TF1* gauF2 = new TF1("gauF2","gaus",-100,100);
 	TF1* gauF3 = new TF1("gauF3","gaus",-100,100);
 
-	h1->Fit("gauF1","","e",-40,40);
-	h2->Fit("gauF2","","e",-40,40);
-	h3->Fit("gauF3","","e",-40,40);
+	h1->Fit("gauF1","","e",-100,100);
+	h2->Fit("gauF2","","e",-100,100);
+	h3->Fit("gauF3","","e",-100,100);
 
 	h1->Draw();
 	c1->Print("/home/jmbenlloch/next/petalo/work/histo/round2/crt_lxe_PHYS.png");
