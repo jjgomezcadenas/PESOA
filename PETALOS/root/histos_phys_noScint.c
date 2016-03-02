@@ -5,7 +5,7 @@ void histos_phys_noScint(){
 
     TH1F *h1 = (TH1F*) fIn1->Get("DTOF.DTOF3");
     TH1F *h2 = (TH1F*) fIn2->Get("DTOF.DTOF3");
-    TH1F *h3 = (TH1F*) fIn3->Get("DTOF.DTOF3");
+    TH1F *h3 = (TH1F*) fIn3->Get("DTOF.DTOF2");
 
 	TF1* gauF1 = new TF1("gauF1","gaus",-100,100);
 	TF1* gauF2 = new TF1("gauF2","gaus",-100,100);

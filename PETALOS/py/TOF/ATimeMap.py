@@ -37,6 +37,7 @@ class ATimeMap(AAlgo):
   		self.SPTR = self.doubles["SPTR"]*ps  #single photon time resolution
   		self.ASIC= self.doubles["ASIC"]*ps  #ASIC contribution
   		self.INTER = self.strings["INTER"]
+  		self.NINDEX = self.strings["NINDEX"] # FIX or VAR refraction index
  	
   		self.NSIPM = self.ints["NSIPM"]   #number of SiPMs per box
 
@@ -54,10 +55,13 @@ class ATimeMap(AAlgo):
 
 		if self.SCINT == "LXE":
 			self.scint = LXe() #lxe properties
-                        if self.INTER ==  "CHER":
-                            self.vel = 0.14/ps
+                        if self.NINDEX == "VAR":
+                            if self.INTER ==  "CHER":
+                                self.vel = 0.14/ps
+                            else:
+                                self.vel = 0.0886/ps
                         else:
-                            self.vel = 0.0886/ps
+                            self.vel = c_light/self.scint.RefractionIndex()
 		elif self.SCINT == "LYSO":
 			self.scint = LYSO()
                         self.vel = c_light/self.scint.RefractionIndex()

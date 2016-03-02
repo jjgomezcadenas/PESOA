@@ -31,6 +31,7 @@ class DTOFAVG(AAlgo):
 		self.debug = self.ints["Debug"]  #used to stop program at key break points
 		self.SCINT = self.strings["SCINTILLATOR"]
 		self.INTER = self.strings["INTER"] # cher or scint
+  		self.NINDEX = self.strings["NINDEX"] # FIX or VAR refraction index
 
 		self.npe = self.ints["NPE"]  #number of pe to avg
 		self.dts = self.vints["DTs"]  # time windows to avg
@@ -44,10 +45,13 @@ class DTOFAVG(AAlgo):
 
 		if self.SCINT == "LXE":
 			self.scint = LXe() #lxe properties
-                        if self.INTER ==  "CHER":
-                            self.vel = 0.14/ps
-                        else:
-                            self.vel = 0.0886/ps
+			if self.NINDEX == "VAR":
+				if self.INTER ==  "CHER":
+					self.vel = 0.14/ps
+				else:
+					self.vel = 0.0886/ps
+			else:
+				self.vel = c_light/self.scint.RefractionIndex()
 		elif self.SCINT == "LYSO":
 			self.scint = LYSO()
                         self.vel = c_light/self.scint.RefractionIndex()
