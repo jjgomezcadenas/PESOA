@@ -6,31 +6,27 @@ void histos_avg(){
 	std::string interaction[3] = {"","_noCher","_noScint"};
 
 	std::string filepath = "/home/jmbenlloch/next/petalo/work/histo/jitter/";
-	// [mat][inter]
-	std::string files[3][2];
-	files[0][0] = "lxe_QE_01.00_SPTR_80_ASIC_30_DT300_histos.root";
-	files[0][1] = "lxe_noCher_QE_01.00_SPTR_80_ASIC_30_DT300_histos.root";
-	files[1][0] = "lxe_tpb_QE_01.00_SPTR_80_ASIC_30_DT300_histos.root";
-	files[1][1] = "lxe_tpb_noCher_QE_01.00_SPTR_80_ASIC_30_DT300_histos.root";
-	files[2][0] = "lyso_QE_01.00_SPTR_80_ASIC_30_DT300_histos.root";
-	files[2][1] = "lyso_noCher_QE_01.00_SPTR_80_ASIC_30_DT300_histos.root";
 
-	double sigmasNPE[3][2][2][10]; // [mat][inter][smear][npe]
-	double errorsNPE[3][2][2][10]; // [mat][inter][smear][npe]
-	double sigmasDT[3][2][2][8]; // [mat][inter]]smear][dt]
-	double errorsDT[3][2][2][8]; // [mat][inter][smear][dt]
+	double sigmasNPE[3][2][2][5][10]; // [mat][inter][smear][pde][npe]
+	double errorsNPE[3][2][2][5][10]; // [mat][inter][smear][pde][npe]
+	double sigmasDT[3][2][2][5][8]; // [mat][inter]]smear][pde][dt]
+	double errorsDT[3][2][2][5][8]; // [mat][inter][smear][pde][dt]
 	int npes[10] = {1,2,3,4,5,6,7,8,9,10};
     int dts[8] = {10,20,50,100,150,200,250,300};
-	char pde[5];
+	int pdes[5] = {10,30,50,70,100};
+	char pdeChar[5];
 
 	TCanvas *c1 = new TCanvas("c1","multipads",900,700);
 
 	for(int mat=0; mat<3;mat++){
-		for(int inter=0; inter<2;inter++){
+		for(int inter=1; inter<2;inter++){
 			for(int smear=0; smear<2;smear++){
-				for(int npe=0;npe<10;npe++){
-
-					std::string fileName = filepath + files[mat][inter];
+				for(int pde=0; pde<5;pde++){
+					sprintf(pdeChar, "%.2lf", pdes[pde]/100.0);
+					if(pdes[pde]==100){
+						sprintf(pdeChar, "0%.2lf", pdes[pde]/100.0);
+					}
+					std::string fileName = filepath + material[mat] + interaction[inter] + std::string("_QE_") + std::string(pdeChar) + std::string("_SPTR_80_ASIC_30_DT300_histos.root"); std::string(Form("%d", 1));
 					std::cout << fileName << std::endl;
 					TFile *fIn = new TFile(fileName.c_str(), "read");
 
@@ -40,64 +36,45 @@ void histos_avg(){
 						smearName = "Smear";
 					}
 
-					std::string histName = baseName + smearName + std::string("DTOF2") + std::string("N") + std::string(Form("%d", npes[npe]));
-					std::cout << histName << std::endl;
+					//NPE
+					for(int npe=0;npe<10;npe++){
+						std::string histName = baseName + smearName + std::string("DTOF2") + std::string("N") + std::string(Form("%d", npes[npe]));
+						std::cout << histName << std::endl;
 
-					TH1F *h1 = (TH1F*) fIn->Get(histName.c_str());
-					TF1* gauF1 = new TF1("gauF1","gaus",-200,200);
-					h1->Fit("gauF1","","e",-200,200);
-					h1->Draw();
+						TH1F *h1 = (TH1F*) fIn->Get(histName.c_str());
+						TF1* gauF1 = new TF1("gauF1","gaus",-200,200);
+						h1->Fit("gauF1","","e",-200,200);
+						h1->Draw();
 
-					std::string path = "/home/jmbenlloch/next/petalo/work/histo/jitter/";
-					std::string histo = path + material[mat] + interaction[inter] + std::string("_") + histName + std::string(".png");
-					std::cout << histo << std::endl;
+						std::string path = "/home/jmbenlloch/next/petalo/work/histo/jitter_avg/npe/";
+						std::string histo = path + material[mat] + interaction[inter] + std::string("_QE_") + std::string(pdeChar) + std::string("_") + histName + std::string(".png");
+						std::cout << histo << std::endl;
 
-					c1->Print(histo.c_str());
+						c1->Print(histo.c_str());
 
-					sigmasNPE[mat][inter][smear][npe] = h1->GetFunction("gauF1")->GetParameter(2);
-					errorsNPE[mat][inter][smear][npe] = h1->GetFunction("gauF1")->GetParError(2);
-
-					fIn->Close();
-				}
-			}
-		}
-	}
-
-
-	for(int mat=0; mat<3;mat++){
-		for(int inter=0; inter<2;inter++){
-			for(int smear=0; smear<2;smear++){
-				for(int dt=0;dt<8;dt++){
-
-					std::string fileName = filepath + files[mat][inter];
-					std::cout << fileName << std::endl;
-					TFile *fIn = new TFile(fileName.c_str(), "read");
-
-					std::string baseName = "DTOFAVG.";
-					std::string smearName = "";
-					if(smear==1){
-						smearName = "Smear";
+						sigmasNPE[mat][inter][smear][pde][npe] = h1->GetFunction("gauF1")->GetParameter(2);
+						errorsNPE[mat][inter][smear][pde][npe] = h1->GetFunction("gauF1")->GetParError(2);
 					}
 
-					std::string histName = baseName + smearName + std::string("DTOF2") + std::string("_DT") + std::string(Form("%d", dts[dt]));
-					std::cout << histName << std::endl;
+					//DT
+					for(int dt=0;dt<8;dt++){
+						std::string histName = baseName + smearName + std::string("DTOF2") + std::string("_DT") + std::string(Form("%d", dts[dt]));
+						std::cout << histName << std::endl;
 
-					TH1F *h1 = (TH1F*) fIn->Get(histName.c_str());
-					TF1* gauF1 = new TF1("gauF1","gaus",-200,200);
-					h1->Fit("gauF1","","e",-200,200);
-					h1->Draw();
+						TH1F *h1 = (TH1F*) fIn->Get(histName.c_str());
+						TF1* gauF1 = new TF1("gauF1","gaus",-200,200);
+						h1->Fit("gauF1","","e",-200,200);
+						h1->Draw();
 
-					std::string path = "/home/jmbenlloch/next/petalo/work/histo/jitter/";
-					std::string histo = path + material[mat] + interaction[inter] + std::string("_") + histName + std::string(".png");
-					std::cout << histo << std::endl;
+						std::string path = "/home/jmbenlloch/next/petalo/work/histo/jitter_avg/dt/";
+						std::string histo = path + material[mat] + interaction[inter] + std::string("_QE_") + std::string(pdeChar) + std::string("_") + histName + std::string(".png");
+						std::cout << histo << std::endl;
 
-					c1->Print(histo.c_str());
+						c1->Print(histo.c_str());
 
-					sigmasDT[mat][inter][smear][dt] = h1->GetFunction("gauF1")->GetParameter(2);
-					std::cout << "sigmasDT[" << mat << "][" << inter << "][" << smear << "][" << dt << "] = " << sigmasDT[mat][inter][smear][dt] << std::endl;
-					errorsDT[mat][inter][smear][dt] = h1->GetFunction("gauF1")->GetParError(2);
-					std::cout << "errorsDT[" << mat << "][" << inter << "][" << smear << "][" << dt << "] = " << errorsDT[mat][inter][smear][dt] << std::endl;
-
+						sigmasDT[mat][inter][smear][pde][dt] = h1->GetFunction("gauF1")->GetParameter(2);
+						errorsDT[mat][inter][smear][pde][dt] = h1->GetFunction("gauF1")->GetParError(2);
+					}
 					fIn->Close();
 				}
 			}
@@ -105,143 +82,87 @@ void histos_avg(){
 	}
 	c1->Close();
 
-	std::cout << "sigmaLXE: ";
-	for(int i=0;i<5;i++){
-		std::cout << sigmasNPE[0][0][0][i] << ", " << std::endl;
-	}
-	std::cout << std::endl;
-
-	// NPE
 	double npesD[10] = {1,2,3,4,5,6,7,8,9,10};
-	for(int inter=0; inter<2;inter++){
-		for(int smear=0; smear<2;smear++){
-			TCanvas *c2 = new TCanvas("c2","multipads",900,700);
-			TGraphErrors *gLxe = new TGraphErrors(10, npesD, sigmasNPE[0][inter][smear], 0, errorsNPE[0][inter][smear]);
-			gLxe->SetLineColor(kRed);
-			gLxe->SetLineWidth(2);
-
-			TGraphErrors *gTpb = new TGraphErrors(10, npesD, sigmasNPE[1][inter][smear], 0, errorsNPE[1][inter][smear]);
-			gTpb->SetLineColor(kBlue);
-			gTpb->SetLineWidth(2);
-
-			TGraphErrors *gLyso = new TGraphErrors(10, npesD, sigmasNPE[2][inter][smear], 0, errorsNPE[2][inter][smear]);
-			gLyso->SetLineColor(kGreen);
-			gLyso->SetLineWidth(2);
-
-			gLyso->Draw();
-			gLyso->SetTitle("");
-			gLyso->GetXaxis().SetTitle("avg PE(#)");
-			gLyso->GetXaxis()->SetLimits(0,10);
-			gLyso->GetYaxis().SetTitle("CRT (ps)");
-			gLyso->SetMinimum(0.);
-			gLyso->SetMaximum(100.);
-			gTpb->Draw("same");
-			gLxe->Draw("same");
-
-			TLegend *leg = new TLegend(0.7, 0.7, 0.9, 0.9);
-			leg->SetFillColor(0);
-			leg->AddEntry(gLxe, "LXe", "lp");
-			leg->AddEntry(gTpb, "LXe-TPB", "lp");
-			leg->AddEntry(gLyso, "LYSO", "lp");
-			leg->Draw("same");
-
-			std::string smearName = "";
-			if(smear==1){
-				smearName = "_smear";
-			}
-			std::string interName = "";
-			if(inter==1){
-				interName = "_noCher";
-			}
-			std::string path = "/home/jmbenlloch/next/petalo/work/histo/";
-			std::string histo = path + std::string("avg_npe") + interName + smearName + std::string(".png");
-
-			c2->Print(histo.c_str());
-			c2->Close();
-
-			std::cout << "NPE sigmaLXE " << interName << smearName << ": ";
-			for(int i=0;i<10;i++){
-				std::cout << sigmasNPE[0][inter][smear][i] << ", ";
-			}
-			std::cout << std::endl;
-			std::cout << "NPE sigmaTPB " << interName << smearName << ": ";
-			for(int i=0;i<10;i++){
-				std::cout << sigmasNPE[0][inter][smear][i] << ", ";
-			}
-			std::cout << std::endl;
-			std::cout << "NPE sigmaLYSO " << interName << smearName << ": ";
-			for(int i=0;i<10;i++){
-				std::cout << sigmasNPE[0][inter][smear][i] << ", ";
-			}
-			std::cout << std::endl;
-
-		}
-	}
-
-	//DT
 	double dtsD[8] = {10,20,50,100,150,200,250,300};
-	for(int inter=0; inter<2;inter++){
-		for(int smear=0; smear<2;smear++){
-			TCanvas *c2 = new TCanvas("c2","multipads",900,700);
-			TGraphErrors *gLxe = new TGraphErrors(8, dtsD, sigmasDT[0][inter][smear], 0, errorsDT[0][inter][smear]);
-			gLxe->SetLineColor(kRed);
-			gLxe->SetLineWidth(2);
+	EColor colors[5] = {kRed,kBlue,kOrange,kYellow,kCyan};
 
-			TGraphErrors *gTpb = new TGraphErrors(8, dtsD, sigmasDT[1][inter][smear], 0, errorsDT[1][inter][smear]);
-			gTpb->SetLineColor(kBlue);
-			gTpb->SetLineWidth(2);
+	for(int mat=0; mat<3;mat++){
+		for(int inter=1; inter<2;inter++){
+			for(int smear=0; smear<2;smear++){
+				std::string smearName = "";
+				if(smear==1){
+					smearName = "_smear";
+				}
+				//NPE
+				TCanvas *c2 = new TCanvas("c2","multipads",900,700);
 
-			TGraphErrors *gLyso = new TGraphErrors(8, dtsD, sigmasDT[2][inter][smear], 0, errorsDT[2][inter][smear]);
-			gLyso->SetLineColor(kGreen);
-			gLyso->SetLineWidth(2);
+				TLegend *leg = new TLegend(0.7, 0.7, 0.9, 0.9);
+				leg->SetFillColor(0);
 
-			gLyso->Draw();
-			gLyso->SetTitle("");
-			gLyso->GetXaxis().SetTitle("avg PE(#)");
-			gLyso->GetXaxis()->SetLimits(0,350);
-			gLyso->GetYaxis().SetTitle("CRT (ps)");
-			gLyso->SetMinimum(0.);
-			gLyso->SetMaximum(100.);
-			gTpb->Draw("same");
-			gLxe->Draw("same");
+				for(int pde=0; pde<5;pde++){
+					TGraphErrors *gLxe = new TGraphErrors(10, npesD, sigmasNPE[mat][inter][smear][pde], 0, errorsNPE[mat][inter][smear][pde]);
+					gLxe->SetLineColor(colors[pde]);
+					gLxe->SetLineWidth(2);
 
-			TLegend *leg = new TLegend(0.7, 0.7, 0.9, 0.9);
-			leg->SetFillColor(0);
-			leg->AddEntry(gLxe, "LXe", "lp");
-			leg->AddEntry(gTpb, "LXe-TPB", "lp");
-			leg->AddEntry(gLyso, "LYSO", "lp");
-			leg->Draw("same");
+					leg->AddEntry(gLxe,Form("PDE %d%%", pdes[pde]), "lp");
 
-			std::string smearName = "";
-			if(smear==1){
-				smearName = "_smear";
+					if(pde==0){
+						gLxe->SetTitle("");
+						gLxe->GetXaxis().SetTitle("avg PE(#)");
+						gLxe->GetXaxis()->SetLimits(0,10);
+						gLxe->GetYaxis().SetTitle("CRT (ps)");
+						gLxe->SetMinimum(0.);
+						gLxe->SetMaximum(100.);
+						gLxe->Draw();
+
+					}else{
+						gLxe->Draw("same");
+					}
+					if(pde==4){
+						leg->Draw("same");
+					}
+				}
+				std::string path = "/home/jmbenlloch/next/petalo/work/histo/jitter_avg/";
+				std::string histo = path + material[mat] + interaction[inter] + std::string("_avg_npe") + smearName + std::string(".png");
+
+				c2->Print(histo.c_str());
+				c2->Close();
+
+				//DT
+				TCanvas *c2 = new TCanvas("c2","multipads",900,700);
+
+				TLegend *leg = new TLegend(0.7, 0.7, 0.9, 0.9);
+				leg->SetFillColor(0);
+
+				for(int pde=0; pde<5;pde++){
+					TGraphErrors *gLxe = new TGraphErrors(8, dtsD, sigmasDT[mat][inter][smear][pde], 0, errorsDT[mat][inter][smear][pde]);
+					gLxe->SetLineColor(colors[pde]);
+					gLxe->SetLineWidth(2);
+
+					leg->AddEntry(gLxe,Form("PDE %d%%", pdes[pde]), "lp");
+
+					if(pde==0){
+						gLxe->SetTitle("");
+						gLxe->GetXaxis().SetTitle("avg PE(#)");
+						gLxe->GetXaxis()->SetLimits(0,350);
+						gLxe->GetYaxis().SetTitle("CRT (ps)");
+						gLxe->SetMinimum(0.);
+						gLxe->SetMaximum(100.);
+						gLxe->Draw();
+
+					}else{
+						gLxe->Draw("same");
+					}
+					if(pde==4){
+						leg->Draw("same");
+					}
+				}
+				std::string path = "/home/jmbenlloch/next/petalo/work/histo/jitter_avg/";
+				std::string histo = path + material[mat] + interaction[inter] + std::string("_avg_dt") + smearName + std::string(".png");
+
+				c2->Print(histo.c_str());
+				c2->Close();
 			}
-			std::string interName = "";
-			if(inter==1){
-				interName = "_noCher";
-			}
-			std::string path = "/home/jmbenlloch/next/petalo/work/histo/";
-			std::string histo = path + std::string("avg_dt") + interName + smearName + std::string(".png");
-
-			c2->Print(histo.c_str());
-			c2->Close();
-
-			std::cout << "DT sigmaLXE " << interName << smearName << ": ";
-			for(int i=0;i<8;i++){
-				std::cout << sigmasDT[0][inter][smear][i] << ", ";
-			}
-			std::cout << std::endl;
-			std::cout << "DT sigmaTPB " << interName << smearName << ": ";
-			for(int i=0;i<8;i++){
-				std::cout << sigmasDT[0][inter][smear][i] << ", ";
-			}
-			std::cout << std::endl;
-			std::cout << "DT sigmaLYSO " << interName << smearName << ": ";
-			for(int i=0;i<8;i++){
-				std::cout << sigmasDT[0][inter][smear][i] << ", ";
-			}
-			std::cout << std::endl;
-
 		}
 	}
 }

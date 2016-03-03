@@ -1,4 +1,4 @@
-void histos_jitter(){
+void histos_jitter_smear(){
 	gStyle->SetOptFit(1);
 	gStyle->SetOptStat(1110);
 
@@ -14,7 +14,7 @@ void histos_jitter(){
 
 
 	for(int mat=0; mat<3;mat++){
-		for(int inter=1; inter<3;inter++){
+		for(int inter=1; inter<2;inter++){
 			for(int i=5;i<=100;i+=5){
 				pdeValues[i/5-1] = i;
 
@@ -34,7 +34,7 @@ void histos_jitter(){
 
 				TFile *fIn = new TFile(fileName.c_str(), "read");
 
-				TH1F *h1 = (TH1F*) fIn->Get("DTOF.DTOF2");
+				TH1F *h1 = (TH1F*) fIn->Get("DTOFAVG.SmearDTOF2N1");
 				TF1* gauF1 = new TF1("gauF1","gaus",-200,200);
 	//			h1->Scale(1/h1->Integral(), "width");
 				h1->Fit("gauF1","","e",-200,200);
@@ -138,17 +138,17 @@ void histos_jitter(){
 	leg_noCher->AddEntry(gLyso_noCher, "LYSO", "lp");
 	leg_noCher->Draw("same");
 
-	c3->Print("/home/jmbenlloch/next/petalo/work/histo/jitter/jitter_noCher.png");
+	c3->Print("/home/jmbenlloch/next/petalo/work/histo/jitter/jitter_noCher_smear.png");
 
 	/********
 	 * cher *
 	 * ******/
-	TCanvas *c3 = new TCanvas("c3","multipads",900,700);
+/*	TCanvas *c3 = new TCanvas("c3","multipads",900,700);
 	TGraphErrors *gLxe_noScint = new TGraphErrors(20, pdeValues, sigmas[0][2], 0, errors[0][2]);
 	gLxe_noScint->SetLineColor(kRed);
 	gLxe_noScint->SetLineWidth(2);
 
-	TGraphErrors *gTpb_noScint = new TGraphErrors(19, pdeValues+1, sigmas[1][2]+1, 0, errors[1][2]+1);
+	TGraphErrors *gTpb_noScint = new TGraphErrors(20, pdeValues, sigmas[1][2], 0, errors[1][2]);
 	gTpb_noScint->SetLineColor(kBlue);
 	gTpb_noScint->SetLineWidth(2);
 
@@ -173,5 +173,6 @@ void histos_jitter(){
 	leg_noScint->AddEntry(gLyso_noScint, "LYSO", "lp");
 	leg_noScint->Draw("same");
 
-	c3->Print("/home/jmbenlloch/next/petalo/work/histo/jitter/jitter_noScint.png");
+	c3->Print("/home/jmbenlloch/next/petalo/work/histo/jitter/jitter_noScint_smear.png");
+	*/
 }

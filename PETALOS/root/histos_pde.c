@@ -12,7 +12,6 @@ void histos_pde(){
 
 	TCanvas *c1 = new TCanvas("c1","multipads",900,700);
 
-
 	for(int mat=0; mat<3;mat++){
 		for(int inter=0; inter<2;inter++){
 			for(int i=5;i<=100;i+=5){
