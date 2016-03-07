@@ -29,6 +29,7 @@ CNTJob LEVEL I 1
 #--------- DATA -------#
 CNTJob INPUT_DATA SV 1
 /Users/jjgomezcadenas/Documents/Development/PETALO/DATA/LYSO_3mm_xy2.4cm_z5cm_noCher.pet
+
 #--------- DATA READER -------#
 CNTJob READER S gateReader
 
@@ -38,10 +39,13 @@ CNTJob WRITER S gateWriter
 #------------- log file -------------#
 CNTJob LOG I 0
 CNTJob FLOG S /Users/jjgomezcadenas/Documents/Development/PETALO/log/LYSO_3mm_xy2.4cm_z5cm_noCher_QE_1_SPTR_0_ASIC_0_DT300.log
+
 #---------- histogram file ----------#
 CNTJob HISTOS 1
-CNTJob FHISTOS S /Users/jjgomezcadenas/Documents/Development/PETALO/histo/LYSO_3mm_xy2.4cm_z5cm_noCher_QE_1_SPTR_0_ASIC_0_DT300.root
+CNTJob FHISTOS S /Users/jjgomezcadenas/Documents/Development/PETALO/histo/
+LYSO_3mm_xy2.4cm_z5cm_noCher_QE_1_SPTR_0_ASIC_0_DT300.root
 
+#---------- histogram file ----------#
 CNTJob TREES 1
 CNTJob FTREES S /Users/jjgomezcadenas/Documents/Development/PETALO/tree/LYSO_3mm_xy2.4cm_z5cm_noCher_QE_1_SPTR_0_ASIC_0_DT300.root
 
@@ -56,6 +60,7 @@ CNTJob FEVENT I 0
 
 #---------- Print status messages after NDEBUG events ----------#
 CNTJob NDEBUG I 100
+
 
 #--------- ALGORITHMS -------#
 CNTJob ALGOS SV 3
@@ -223,4 +228,3 @@ AFiducial FBox2V8 DV 3
 12.0
 12.0 
 149.
-

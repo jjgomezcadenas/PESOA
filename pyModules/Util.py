@@ -1,9 +1,14 @@
 """
 Utilities
 """
+from __future__ import print_function
 from math import *
-import sys
+import sys, os
 from Centella.physical_constants import *
+
+import matplotlib.pyplot as plt
+import numpy as np
+
 ps = picosecond
 nm = nanometer 
 mol = mole

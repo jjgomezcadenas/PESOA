@@ -1,21 +1,48 @@
 from math import *
 
-D=220 #mm
-n = 22 #number of modules in 2pi
+D=280 #mm
+n = 30 #number of modules in 2pi
 nc = n/4. #number of modules per cuadrant
 theta = 2*pi/n  #segmentation angle
-L = 30 #mm depths of scanner
+L = 50 #mm depths of scanner
 
-D=800 #mm
-n = 50 #number of modules in 2pi
-nc = n/4. #number of modules per cuadrant
-theta = 2*pi/n  #segmentation angle
-L = 20 #mm depths of scanner
+# D=800 #mm
+# n = 50 #number of modules in 2pi
+# nc = n/4. #number of modules per cuadrant
+# theta = 2*pi/n  #segmentation angle
+# L = 20 #mm depths of scanner
 
 display = False
 
+sipm = 50 #euros per SiPM
+lxe= 1 #euro/cm3
+elec = 30 #euros/channel, including cables
+surf = 3*3 #cm3 per SiPM
 
-#def Cost():
+
+def Cost(mi,mo,V):
+	nSiPM = (mi*mi + mo*mo)/surf
+	cost_SiPM = nSiPM * sipm * n
+	cost_lxe = V*lxe * n
+	cost_elec = nSiPM * elec *n 
+	cost_cryo = 1e+5 #euros
+	cost_mech = 1e+3*n #euros
+	cost_compt = 5e+4 #euros
+	tot = cost_SiPM+cost_lxe+cost_elec+cost_cryo+cost_mech+cost_compt
+
+	print """
+	nSiPM = %7.2f
+	Cost SiPM = %7.2f euro
+	Cost electronics = %7.2f euro
+	Cost lxe = %7.2f euro
+	Cryostats = %7.2f euro
+	Mechanics = %7.2f euro
+	Computing = %7.2f euro
+
+	Total cost = %7.2f euro
+	
+	"""%(nSiPM*n,cost_SiPM,cost_elec,cost_lxe,cost_cryo,cost_mech,cost_compt,
+		tot)
 
 
 
@@ -112,6 +139,8 @@ if __name__ == '__main__':
 	mO for module = %7.2f mm
 	Volume of module %7.2f cm3
 	"""%(D,RI,RO,n,theta,mI,mO,V)
+
+	Cost(mI,mO,V)
 
 	if display == True:
 		P=[]
