@@ -69,6 +69,22 @@ class Scintillator(object):
     """
     pass
 
+  @abstractmethod     
+  def RefractionIndexL(self,lamda):
+    """
+    returns the refraction index to the scintillation light
+    """
+    pass
+
+  @abstractmethod     
+  def RefractionIndexBlue(self):
+    """
+    returns the refraction index to the blue scintillation light
+    """
+    pass
+
+    
+
   @abstractmethod
   def DecayConstant(self):
     """
@@ -554,6 +570,18 @@ class LYSO(Scintillator):
        """
       return self.n
 
+    def RefractionIndexL(self,lamda):
+      """
+      returns the refraction index
+      """
+      return self.n
+
+    def RefractionIndexBlue(self):
+      """
+      returns the refraction index
+      """
+      return self.n
+
     def DecayConstant(self):
       """
       Interface
@@ -645,7 +673,7 @@ def testLxe():
   print lxe 
   print lxe.DisplayProperties() 
 
-  for l in drange(150*nm,220*nm,5*nm):
+  for l in drange(150*nm,450*nm,10*nm):
     print """
     for lamda = %7.2f nm (%7.2f eV) n = %7.2f
     """%(l/nm, 1240./(l/nm), lxe.RefractionIndexL(l))
