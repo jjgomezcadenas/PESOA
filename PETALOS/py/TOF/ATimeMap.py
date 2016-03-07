@@ -218,7 +218,8 @@ class ATimeMap(AAlgo):
 			for timeBins in waveform:
 				# get the arrival time of the pe
 				tbin = timeBins.first
-				time = tbin*5*ps
+				#time = tbin*5*ps
+                                time = tbin*self.BIN*ps
 				A = timeBins.second
 				np+=1
 
