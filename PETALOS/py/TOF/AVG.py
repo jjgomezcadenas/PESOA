@@ -141,7 +141,10 @@ class AVG(AAlgo):
     
                 t1 = 0
                 t2 = 0
-                for i in range(self.npe):
+                lastNPE = min(len(TimeMapBox1),len(TimeMapBox2))
+                lastNPE = min(self.npe,lastNPE)
+ #               print "last: %s" % lastNPE
+                for i in range(lastNPE):
                     dbox1 = distance(TimeMapBox1[i][1].XYZ(),vertexBox1.XYZ())
                     tpath1 = dbox1 * 1/self.vel
                     dbox2 = distance(TimeMapBox2[i][1].XYZ(),vertexBox2.XYZ())
