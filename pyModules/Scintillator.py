@@ -739,10 +739,44 @@ def testLyso():
       """%(z,
            lyso.EfficiencyAt511KeV(z*cm))
 
+def plotLXe():
+  Lambda=[]
+  I=[]
+  N=[]
+  for elem in LXeRefractionIndex:
+    ene = elem[0]
+    n = elem[1]
+    f = elem[2]
+    Lambda.append(1240./ene)
+    I.append(f)
+    N.append(n)
+  
+  plt.plot(Lambda,I)
+  plt.show()
+  plt.plot(Lambda,N)
+  plt.show()
+
+def plotLYSO():
+  Lambda=[]
+  I=[]
+  
+  for elem in LysoScintSpectrum:
+    ene = elem[0]
+    f = elem[1]
+    Lambda.append(1240./ene)
+    I.append(f)
+    
+  
+  plt.plot(Lambda,I)
+  plt.show()
+
+
 if __name__ == '__main__':
     
-    testLxe()
-    testLyso()
+    #testLxe()
+    #testLyso()
+    plotLXe()
+    plotLYSO()
     
 
         

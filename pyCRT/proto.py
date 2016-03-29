@@ -6,16 +6,16 @@ nc = n/4. #number of modules per cuadrant
 theta = 2*pi/n  #segmentation angle
 L = 50 #mm depths of scanner
 
-# D=800 #mm
-# n = 50 #number of modules in 2pi
-# nc = n/4. #number of modules per cuadrant
-# theta = 2*pi/n  #segmentation angle
-# L = 20 #mm depths of scanner
+D=800 #mm
+n = 50 #number of modules in 2pi
+nc = n/4. #number of modules per cuadrant
+theta = 2*pi/n  #segmentation angle
+L = 20 #mm depths of scanner
 
 display = False
 
-sipm = 50 #euros per SiPM
-lxe= 1 #euro/cm3
+sipm = 10 #euros per SiPM
+lxe= 3 #euro/cm3
 elec = 30 #euros/channel, including cables
 surf = 3*3 #cm3 per SiPM
 
@@ -128,6 +128,7 @@ if __name__ == '__main__':
 	mO = cO/n
 
 	V = ModuleVolume(mI/10.,mO/10.,L/10.)
+	V2 = (mI*mI*L)/1000.
 	print """
 	PET internal diameter = %7.2f mm
 	PET internal radius = %7.2f mm
@@ -138,7 +139,8 @@ if __name__ == '__main__':
 	mI for module = %7.2f mm
 	mO for module = %7.2f mm
 	Volume of module %7.2f cm3
-	"""%(D,RI,RO,n,theta,mI,mO,V)
+	Cubic Volume of module %7.2f cm3
+	"""%(D,RI,RO,n,theta,mI,mO,V,V2)
 
 	Cost(mI,mO,V)
 
