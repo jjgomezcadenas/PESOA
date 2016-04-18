@@ -53,25 +53,15 @@ class ATimeMap(AAlgo):
 
 		self.m.log(1, "QE = %7.2f Time Jitter =%7.2f ps  --"%(self.QE, self.TJ/ps))
 
-		if self.SCINT == "LXE":
-			self.scint = LXe() #lxe properties
-                        if self.NINDEX == "VAR":
-                            if self.INTER ==  "CHER":
-                                self.vel = 0.14/ps
-                            else:
-                                self.vel = 0.0886/ps
-                        else:
-                            self.vel = c_light/self.scint.RefractionIndex()
-		elif self.SCINT == "LYSO":
-			self.scint = LYSO()
-                        self.vel = c_light/self.scint.RefractionIndex()
-		else:
-			print "scintillator not yet implemented"
-			sys.exit()
 
-		print self.scint
+                self.profileROOT = self.strings["VELHIST"] # ROOT file with vel hists
+                rootFile = ROOT.TFile.Open(self.profileROOT, "read")
+                rootFile.PhVelTime.Rebin2D(40,40)
+                self.profileVel = rootFile.PhVelTime.ProfileX()
+                # Needed to avoid   'PyROOT_NoneType' object error
+                self.profileVel.SetDirectory(0)
+                self.vel = photonVelocity(self.profileVel, self.SCINT, self.NINDEX, self.INTER)
 
-		
 		if self.debug == 1:
 			wait()
 
@@ -294,6 +284,9 @@ class ATimeMap(AAlgo):
 
 					# smear time, to take into account the effect of ASIC and SiPM
 					stime = SmearTime(time,self.SPTR,self.ASIC)
+                                        tpes  = stime - vertexBox1.t -tpath1
+					if len(sipmhit.W)==0:
+                                           self.hman.fill(self.gaus_histo_name,tpes/ps)
 
 					if self.boxId(hid) == 1:
 		
@@ -330,7 +323,7 @@ class ATimeMap(AAlgo):
 						timeFirstPe = stime 
 
 					elif abs(stime - timeFirstPe) < self.DTMAX:
-						sipmhit.W.append(time)
+						sipmhit.W.append(stime)
 					else:
 						break 
 			
@@ -365,6 +358,7 @@ class ATimeMap(AAlgo):
 		if ng1 ==0 or ng2 ==0:
 			print "!!! ng1 = %d, ng2=%d"%(ng1,ng2)
 			return False
+
 
 		if len(timeMapBox1) ==0 or len(timeMapBox2) ==0:
 			print "!!! len(timeMapBox1) = %d, len(timeMapBox2)=%d"%(
@@ -413,6 +407,10 @@ class ATimeMap(AAlgo):
 		"""
 		book the histograms for the algo 
 		"""
+
+		gaus_histo_desc = "gaus"
+		self.gaus_histo_name = self.alabel(gaus_histo_desc)
+		self.hman.h1(self.gaus_histo_name, gaus_histo_desc,200, -300, 300)
 
 		if self.HBOX ==1 :
 			NGBOX1_histo_desc = "NGBOX1"

@@ -40,25 +40,12 @@ class AVG(AAlgo):
 		self.zres = self.doubles["ZRES"]  #X resolution
 
 
-		#load coordinates of box and fiducial box
-
-		if self.SCINT == "LXE":
-			self.scint = LXe() #lxe properties
-			if self.NINDEX == "VAR":
-				if self.INTER ==  "CHER":
-					self.vel = 0.14/ps
-				else:
-					self.vel = 0.0886/ps
-			else:
-				self.vel = c_light/self.scint.RefractionIndex()
-		elif self.SCINT == "LYSO":
-			self.scint = LYSO()
-                        self.vel = c_light/self.scint.RefractionIndex()
-		else:
-			print "scintillator not yet implemented"
-			sys.exit()
-
-		print self.scint
+		self.profileROOT = self.strings["VELHIST"]
+		rootFile = ROOT.TFile.Open(self.profileROOT, "read")
+                rootFile.PhVelTime.Rebin2D(40,40)
+                self.profileVel = rootFile.PhVelTime.ProfileX()
+                # Needed to avoid   'PyROOT_NoneType' object error
+                self.profileVel.SetDirectory(0)
 
 		if self.debug == 1:
 			wait()
@@ -146,9 +133,14 @@ class AVG(AAlgo):
  #               print "last: %s" % lastNPE
                 for i in range(lastNPE):
                     dbox1 = distance(TimeMapBox1[i][1].XYZ(),vertexBox1.XYZ())
-                    tpath1 = dbox1 * 1/self.vel
+                    #tpath1 = dbox1 * 1/self.vel
+                    timeDiff1 = (TimeMapBox1[i][0] - TimeMapBox1[0][0])/ps
+                    tpath1 = dbox1 * 1/photonVelocity(self.profileVel,self.SCINT, self.NINDEX, self.INTER, timeDiff1)
+
                     dbox2 = distance(TimeMapBox2[i][1].XYZ(),vertexBox2.XYZ())
-                    tpath2 = dbox2 * 1/self.vel
+                    #tpath2 = dbox2 * 1/self.vel
+                    timeDiff2 = (TimeMapBox2[i][0] - TimeMapBox2[0][0])/ps
+                    tpath2 = dbox2 * 1/photonVelocity(self.profileVel,self.SCINT, self.NINDEX, self.INTER, timeDiff2)
 
                     t1 += TimeMapBox1[i][0] - tpath1
                     t2 += TimeMapBox2[i][0] - tpath2

@@ -3,6 +3,7 @@ from Centella.AAlgo import AAlgo
 from Particles import *
 from Util import *
 from Geometry import *
+from TOF import *
 
 
 """
@@ -33,6 +34,10 @@ class AFiducial(AAlgo):
 		### PARAMETERS
 		
 		self.debug = self.ints["Debug"]  #used to stop program at key break points
+
+		self.xres = self.doubles["XRES"]  #Resolution in the X coordinate in FHWM
+		self.yres = self.doubles["YRES"]  #Resolution in the Y coordinate in FWHM
+		self.zres = self.doubles["ZRES"]  #Resolution in the Z coordinate in FWHM
 
 		#load coordinates of box and fiducial box
 
@@ -153,9 +158,14 @@ class AFiducial(AAlgo):
 					self.hman.fill(self.TBox1_histo_name, 
 					t/ps)
 
-				vertexBox1.x = x
-				vertexBox1.y = y
-				vertexBox1.z = z
+                                xSmear, ySmear, zSmear = SmearVertex((x,y,z,), self.xres, self.yres, self.zres)
+                                #print "x: %s, xS: %s, y: %s, yS: %s, z: %s, zS: %s" %(x,xSmear,y,ySmear,z,zSmear)
+				#vertexBox1.x = x 
+				#vertexBox1.y = y
+				#vertexBox1.z = z
+				vertexBox1.x = xSmear
+				vertexBox1.y = ySmear
+				vertexBox1.z = zSmear
 				vertexBox1.t = t
 
 				fid+=1
@@ -177,9 +187,14 @@ class AFiducial(AAlgo):
 					self.hman.fill(self.TBox2_histo_name, 
 					t/ps)
 
-				vertexBox2.x = x
-				vertexBox2.y = y
-				vertexBox2.z = z
+                                xSmear, ySmear, zSmear = SmearVertex((x,y,z,), self.xres, self.yres, self.zres)
+                                #print "x: %s, xS: %s, y: %s, yS: %s, z: %s, zS: %s" %(x,xSmear,y,ySmear,z,zSmear)
+				#vertexBox2.x = x
+				#vertexBox2.y = y
+				#vertexBox2.z = z
+				vertexBox2.x = xSmear
+				vertexBox2.y = ySmear
+				vertexBox2.z = zSmear
 				vertexBox2.t = t
 
 				fid+=1

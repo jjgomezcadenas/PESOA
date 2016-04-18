@@ -36,24 +36,13 @@ class NFirst(AAlgo):
 		self.INTER = self.strings["INTER"] # cher or scint
   		self.NINDEX = self.strings["NINDEX"] # FIX or VAR refraction index
 
-		#load coordinates of box and fiducial box
-
-		if self.SCINT == "LXE":
-			self.scint = LXe() #lxe properties
-			if self.NINDEX == "VAR":
-				if self.INTER ==  "CHER":
-					self.vel = 0.14/ps
-				else:
-					self.vel = 0.0886/ps
-			else:
-				self.vel = c_light/self.scint.RefractionIndex()
-		elif self.SCINT == "LYSO":
-			self.scint = LYSO()
-                        self.vel = c_light/self.scint.RefractionIndex()
-		else:
-			print "scintillator not yet implemented"
-			sys.exit()
-
+		self.profileROOT = self.strings["VELHIST"]
+		rootFile = ROOT.TFile.Open(self.profileROOT, "read")
+		rootFile.PhVelTime.Rebin2D(40,40)
+		self.profileVel = rootFile.PhVelTime.ProfileX()
+		# Needed to avoid   'PyROOT_NoneType' object error
+		self.profileVel.SetDirectory(0)
+	
 		if self.debug == 1:
 			wait()
 
@@ -158,11 +147,17 @@ class NFirst(AAlgo):
 
                     dbox1 = distance(sipmHit1.XYZ(),vertexBox1.XYZ())
                     #tpath1 = dbox1*self.scint.RefractionIndex()/c_light
-                    tpath1 = dbox1 * 1/self.vel
+                    #tpath1 = dbox1 * 1/self.vel
+                    timeDiff1 = (TimeMapBox1[i][0] - TimeMapBox1[0][0])/ps
+                    vel = photonVelocity(self.profileVel,self.SCINT, self.NINDEX, self.INTER, timeDiff1)
+                    tpath1 = dbox1 * 1/vel
 
         	    dbox2 = distance(sipmHit2.XYZ(),vertexBox2.XYZ())
         	    #tpath2 = dbox2*self.scint.RefractionIndex()/c_light
-                    tpath2 = dbox2 * 1/self.vel
+                    #tpath2 = dbox2 * 1/self.vel
+                    timeDiff2 = (TimeMapBox2[i][0] - TimeMapBox2[0][0])/ps
+                    vel = photonVelocity(self.profileVel,self.SCINT, self.NINDEX, self.INTER, timeDiff2)
+                    tpath2 = dbox2 * 1/vel
 
 		    timePeBox1 = TimeMapBox1[i-1][0] - tpath1 - vertexBox1.t
 		    timePeBox2 = TimeMapBox2[i-1][0] - tpath2 - vertexBox2.t
@@ -179,7 +174,7 @@ class NFirst(AAlgo):
 		"""
                 for i in self.times:
                     histName = "Time_" + str(i) + "_PEBox1"
-	            self.defineHisto(histName,"Time first PE Box1 (ps)",1,[100],[-100],[self.histoRange])
+	            self.defineHisto(histName,"Time first PE Box1 (ps)",1,[200],[-300],[self.histoRange])
         
 
 ############################################################

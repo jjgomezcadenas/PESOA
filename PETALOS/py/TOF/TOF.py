@@ -2,6 +2,33 @@ from Util import *
 import random as rnd
 import sys
 from Geometry import *
+from Scintillator import *
+
+import ROOT
+
+############################################################
+def photonVelocity(profileVel, scint, nindex, inter, time=0):
+	"""
+        Gives photon velocity depending on the material, refraction index, interaction
+        and, if needed, time of detection (for Cherenkov case)
+	"""
+
+        if scint == "LXE":
+            scint = LXe()
+            if nindex == "VAR":
+                if inter == "CHER":
+                    #vel = 0.14/ps #avg
+                   vel = profileVel.GetBinContent(profileVel.FindBin(time)) / ps
+                else:
+                    #vel = 0.0886/ps
+                    vel = 0.1/ps
+            else:
+                vel = c_light/scint.RefractionIndex()
+        else:
+            scint = LYSO()
+            vel = c_light/scint.RefractionIndex()
+
+	return vel
 
 ############################################################
 def sortTimesSipm(hit):
@@ -41,11 +68,11 @@ def SmearTime(time,SPTR,ctrASIC):
 ###########################################################
 def SmearVertex((x,y,z),xres,yres,zres):
 	"""
-	Smears position to take into account space resolution
+	Smears position to take into account space resolution (FWHM)
 	"""
-	x = x + rnd.gauss(0, xres)
-	y = y + rnd.gauss(0, yres)
-	z = z + rnd.gauss(0, zres)
+	x = x + rnd.gauss(0, xres/2.35)
+	y = y + rnd.gauss(0, yres/2.35)
+	z = z + rnd.gauss(0, zres/2.35)
 	return (x,y,z)
 
 ###########################################################

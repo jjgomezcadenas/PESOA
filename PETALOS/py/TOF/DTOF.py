@@ -33,26 +33,14 @@ class DTOF(AAlgo):
 		self.INTER = self.strings["INTER"] # cher or scint
   		self.NINDEX = self.strings["NINDEX"] # FIX or VAR refraction index
 
-		#load coordinates of box and fiducial box
 
-		if self.SCINT == "LXE":
-			self.scint = LXe() #lxe properties                        
-                        if self.NINDEX == "VAR":
-                            if self.INTER ==  "CHER":
-                                self.vel = 0.14/ps
-                            else:
-                                self.vel = 0.0886/ps
-                        else:
-                            self.vel = c_light/self.scint.RefractionIndex()
-		elif self.SCINT == "LYSO":
-			self.scint = LYSO()
-                        self.vel = c_light/self.scint.RefractionIndex()
-		else:
-			print "scintillator not yet implemented"
-			sys.exit()
-
-		print self.scint
-
+		self.profileROOT = self.strings["VELHIST"] # ROOT file with vel hists
+		rootFile = ROOT.TFile.Open(self.profileROOT, "read")
+		rootFile.PhVelTime.Rebin2D(40,40)
+		self.profileVel = rootFile.PhVelTime.ProfileX()
+		# Needed to avoid   'PyROOT_NoneType' object error
+		self.profileVel.SetDirectory(0)
+		self.vel = photonVelocity(self.profileVel, self.SCINT, self.NINDEX, self.INTER)
 
 		if self.debug == 1:
 			wait()
@@ -138,14 +126,10 @@ class DTOF(AAlgo):
 		
 		dbox1 = distance(siPMHit1.XYZ(),vertexBox1.XYZ())
 		#tpath1 = dbox1*self.scint.RefractionIndex()/c_light
-		tpath1old = dbox1*self.scint.RefractionIndex()/c_light
                 tpath1 = dbox1 * 1/self.vel
-                #print "%s - %s" % (tpath1,tpath1old)
 		dbox2 = distance(siPMHit2.XYZ(),vertexBox2.XYZ())
 		#tpath2 = dbox2*self.scint.RefractionIndex()/c_light
-		tpath2old = dbox2*self.scint.RefractionIndex()/c_light
                 tpath2 = dbox2 * 1/self.vel
-                #print "%s - %s" % (tpath2,tpath2old)
 
 		dpg = tpath2 - tpath1
 
