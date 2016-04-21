@@ -148,14 +148,14 @@ class NFirst(AAlgo):
                     dbox1 = distance(sipmHit1.XYZ(),vertexBox1.XYZ())
                     #tpath1 = dbox1*self.scint.RefractionIndex()/c_light
                     #tpath1 = dbox1 * 1/self.vel
-                    timeDiff1 = (TimeMapBox1[i][0] - TimeMapBox1[0][0])/ps
+                    timeDiff1 = (TimeMapBox1[i-1][0] - TimeMapBox1[0][0])/ps
                     vel = photonVelocity(self.profileVel,self.SCINT, self.NINDEX, self.INTER, timeDiff1)
                     tpath1 = dbox1 * 1/vel
 
         	    dbox2 = distance(sipmHit2.XYZ(),vertexBox2.XYZ())
         	    #tpath2 = dbox2*self.scint.RefractionIndex()/c_light
                     #tpath2 = dbox2 * 1/self.vel
-                    timeDiff2 = (TimeMapBox2[i][0] - TimeMapBox2[0][0])/ps
+                    timeDiff2 = (TimeMapBox2[i-1][0] - TimeMapBox2[0][0])/ps
                     vel = photonVelocity(self.profileVel,self.SCINT, self.NINDEX, self.INTER, timeDiff2)
                     tpath2 = dbox2 * 1/vel
 

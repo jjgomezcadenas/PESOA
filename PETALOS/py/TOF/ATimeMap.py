@@ -354,6 +354,8 @@ class ATimeMap(AAlgo):
 			self.hman.fill(self.NGBOX1_histo_name,ng1)
 		if self.HBOX ==2 :	
 			self.hman.fill(self.NGBOX2_histo_name,ng2)
+
+                self.hman.fill(self.nGammas12_histo_name,ng1,ng2)
 		
 		if ng1 ==0 or ng2 ==0:
 			print "!!! ng1 = %d, ng2=%d"%(ng1,ng2)
@@ -364,6 +366,8 @@ class ATimeMap(AAlgo):
 			print "!!! len(timeMapBox1) = %d, len(timeMapBox2)=%d"%(
 				len(timeMapBox1),len(timeMapBox2))
 			return False
+
+                self.hman.fill(self.nGammas12PDE_histo_name,len(timeMapBox1),len(timeMapBox2))
 
 		# sort the maps according to the time stamp of first pe
 		TimeMapBox1 = sorted(timeMapBox1.items(), key=sortSiPmHits)
@@ -407,6 +411,13 @@ class ATimeMap(AAlgo):
 		"""
 		book the histograms for the algo 
 		"""
+		nGammas12_histo_desc = "nGammas12"
+		self.nGammas12_histo_name = self.alabel(nGammas12_histo_desc)
+		self.hman.h2(self.nGammas12_histo_name, nGammas12_histo_desc,150,0,150,150,0,150)  	
+
+		nGammas12PDE_histo_desc = "nGammas12PDE"
+		self.nGammas12PDE_histo_name = self.alabel(nGammas12PDE_histo_desc)
+		self.hman.h2(self.nGammas12PDE_histo_name, nGammas12PDE_histo_desc,150,0,150,150,0,150)  	
 
 		gaus_histo_desc = "gaus"
 		self.gaus_histo_name = self.alabel(gaus_histo_desc)

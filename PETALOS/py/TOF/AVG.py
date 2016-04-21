@@ -35,11 +35,6 @@ class AVG(AAlgo):
 
 		self.npe = self.ints["NPE"]  #number of pe to avg
 
-		self.xres = self.doubles["XRES"]  #X resolution
-		self.yres = self.doubles["YRES"]  #X resolution
-		self.zres = self.doubles["ZRES"]  #X resolution
-
-
 		self.profileROOT = self.strings["VELHIST"]
 		rootFile = ROOT.TFile.Open(self.profileROOT, "read")
                 rootFile.PhVelTime.Rebin2D(40,40)
