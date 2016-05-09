@@ -55,11 +55,14 @@ class ATimeMap(AAlgo):
 
 
                 self.profileROOT = self.strings["VELHIST"] # ROOT file with vel hists
-                rootFile = ROOT.TFile.Open(self.profileROOT, "read")
-                rootFile.PhVelTime.Rebin2D(40,40)
-                self.profileVel = rootFile.PhVelTime.ProfileX()
-                # Needed to avoid   'PyROOT_NoneType' object error
-                self.profileVel.SetDirectory(0)
+                if self.profileROOT != 'None':
+                    rootFile = ROOT.TFile.Open(self.profileROOT, "read")
+                    rootFile.PhVelTime.Rebin2D(40,40)
+                    self.profileVel = rootFile.PhVelTime.ProfileX()
+                    # Needed to avoid   'PyROOT_NoneType' object error
+                    self.profileVel.SetDirectory(0)
+                else:
+                    self.profileVel = False
                 self.vel = photonVelocity(self.profileVel, self.SCINT, self.NINDEX, self.INTER)
 
 		if self.debug == 1:
@@ -319,11 +322,13 @@ class ATimeMap(AAlgo):
 					#keep the time stamp if forst PE ortime within DTMAX
 
 					if len(sipmhit.W)==0: #first PE
-						sipmhit.W.append(stime)
+                                                for _ in range(int(A)):
+						    sipmhit.W.append(stime)
 						timeFirstPe = stime 
 
 					elif abs(stime - timeFirstPe) < self.DTMAX:
-						sipmhit.W.append(stime)
+                                                for _ in range(int(A)):
+						    sipmhit.W.append(stime)
 					else:
 						break 
 			
@@ -367,7 +372,10 @@ class ATimeMap(AAlgo):
 				len(timeMapBox1),len(timeMapBox2))
 			return False
 
-                self.hman.fill(self.nGammas12PDE_histo_name,len(timeMapBox1),len(timeMapBox2))
+
+                ngBox1 = sum(map(lambda hit: len(hit.W) , timeMapBox1.itervalues()))
+                ngBox2 = sum(map(lambda hit: len(hit.W) , timeMapBox2.itervalues()))
+                self.hman.fill(self.nGammas12PDE_histo_name,ngBox1,ngBox2)
 
 		# sort the maps according to the time stamp of first pe
 		TimeMapBox1 = sorted(timeMapBox1.items(), key=sortSiPmHits)
@@ -429,7 +437,7 @@ class ATimeMap(AAlgo):
 
 			if self.INTER == "CHER":
 				self.hman.h1(self.NGBOX1_histo_name, NGBOX1_histo_desc, 
-				25, 0, 200)
+				200, 0, 200)
 			else:
 				self.hman.h1(self.NGBOX1_histo_name, NGBOX1_histo_desc, 
 				100, 0, 30000)

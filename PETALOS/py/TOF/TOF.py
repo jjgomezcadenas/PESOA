@@ -17,8 +17,11 @@ def photonVelocity(profileVel, scint, nindex, inter, time=0):
             scint = LXe()
             if nindex == "VAR":
                 if inter == "CHER":
-                    #vel = 0.14/ps #avg
-                   vel = profileVel.GetBinContent(profileVel.FindBin(time)) / ps
+                    if profileVel:
+                        #vel = 0.14/ps #avg
+                       vel = profileVel.GetBinContent(profileVel.FindBin(time)) / ps
+                    else:
+                        vel = c_light/1.4
                 else:
                     #vel = 0.0886/ps
                     vel = 0.1/ps
@@ -185,7 +188,7 @@ class TimeMap(object):
 		self.numberOfBoxes = numberOfBoxes
 		self.dtmax = dtmax
 		self.vertexList =0
-		self.siPmMapList =0
+		self.siPmMapList = ([[],[]])
 		self.siPmMapDTList =0
 		self.siPmMapTimeList = 0
 	

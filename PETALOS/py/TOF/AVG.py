@@ -36,11 +36,14 @@ class AVG(AAlgo):
 		self.npe = self.ints["NPE"]  #number of pe to avg
 
 		self.profileROOT = self.strings["VELHIST"]
-		rootFile = ROOT.TFile.Open(self.profileROOT, "read")
-                rootFile.PhVelTime.Rebin2D(40,40)
-                self.profileVel = rootFile.PhVelTime.ProfileX()
-                # Needed to avoid   'PyROOT_NoneType' object error
-                self.profileVel.SetDirectory(0)
+                if self.profileROOT != 'None':
+		    rootFile = ROOT.TFile.Open(self.profileROOT, "read")
+                    rootFile.PhVelTime.Rebin2D(40,40)
+                    self.profileVel = rootFile.PhVelTime.ProfileX()
+                    # Needed to avoid   'PyROOT_NoneType' object error
+                    self.profileVel.SetDirectory(0)
+                else:
+                    self.profileVel = False
 
 		if self.debug == 1:
 			wait()
