@@ -1,0 +1,138 @@
+from math import sqrt
+############################################################
+def PrimaryParticles(event):
+	"""
+	Finds the primary particles in the event
+	(and returns them in a list sorted by time)
+	"""
+	
+	primaryParticles =[]
+	for particle in event.GetMCParticles():
+		if particle.IsPrimary():
+			
+			#print '+++++found primary particle, name = ',particleName(particle)
+			#particleInfo(particle)
+			primaryParticles.append(particle)
+
+	return sorted(primaryParticles, key=particleTime)
+
+############################################################
+def SecondaryParticles(primaryParticle):
+	"""
+	Finds the particles associated to a primaryParticle 
+	(and returns them in a list sorted by time)
+	"""
+	
+	Particles =[]
+
+	for particle in primaryParticle.GetDaughters():
+		#print '-----found secondary partic, name = ',particleName(particle) 
+		#particleInfo(particle)
+		Particles.append(particle)
+	return sorted(Particles, key=particleTime)
+
+
+############################################################
+def ClassifyInteraction(particle):
+	#print 'In ClassifyInteraction: process ', particle.GetCreatorProc()
+	return particle.GetCreatorProc() 
+
+############################################################
+def particleTime(particle):
+	return particle.GetInitialVtx4D().GetT()
+
+############################################################
+def particleEnergy(particle):
+	return (particle.GetInitialMom().GetE(), particle.GetFinalMom().GetE())
+
+############################################################
+def particleInitialMomentum(particle):
+	return (particle.GetInitialMom().x(), 
+		particle.GetInitialMom().y(),
+		particle.GetInitialMom().z())
+############################################################	
+def particleFinalMomentum(particle):
+	return (particle.GetFinalMom().x(), 
+		particle.GetFinalMom().y(),
+		particle.GetFinalMom().z())
+
+############################################################
+def particleKineticEnergy(particle):
+	# print "particle energy =",particleEnergy(particle)
+	# print "particle mass =",particleMass(particle)
+	# print "kinetic energy =",particleEnergy(particle) - particleMass(particle)
+	ei, ef = particleEnergy(particle)
+	return (ei - particleMass(particle), ef - particleMass(particle))
+
+############################################################
+def particleName(particle):
+	pdg = particle.GetPDG()
+	if  pdg == 11:
+  		return "e-"
+  	elif pdg == -11 :
+  		return "e+"
+  	elif pdg == 22 :
+  		return "gamma"
+  	else :
+  		return "unknown"
+############################################################
+def particleMass(particle):
+	pdg = particle.GetPDG()
+	if  pdg == 11:
+  		return 0.510998902
+  	elif pdg == -11 :
+  		return 0.510998902
+  	elif pdg == 22 :
+  		return 0.
+  	else :
+  		return 0.
+
+
+############################################################
+def particleInitialVtx(particle):
+	return (particle.GetInitialVtx().x(), particle.GetInitialVtx().y(),
+	particle.GetInitialVtx().z())
+
+############################################################
+def particleFinalVtx(particle):
+	return (particle.GetFinalVtx().x(), particle.GetFinalVtx().y(),
+	particle.GetFinalVtx().z())
+	
+############################################################
+def particleInfo(particle):
+	print "***Particle Info***"
+	ei,ef = particleEnergy(particle)
+	ti,tf = particleKineticEnergy(particle)
+	print " name = %s, mass = %7.2f, Ei = %7.2f Ef = %7.2f Ti = %7.2f Tf = %7.2f"%(
+		particleName(particle), particleMass(particle),ei,ef,ti,tf)
+	print 'time = %7.2f '%(particleTime(particle))		
+	x,y,z = particleInitialVtx(particle)
+	print 'initial vertex x = %7.2f y = %7.2f z = %7.2f '%(x,y,z)
+	x,y,z = particleFinalVtx(particle)		
+	print 'final vertex x = %7.2f y = %7.2f z = %7.2f '%(x,y,z)
+
+############################################################
+def particleInfo(logger, lvl, particle):
+	logger.log(lvl,' ++ParticleInfo++')
+		
+	ti,tf = particleKineticEnergy(particle)
+	logger.log(lvl,'Ti = %7.2f keV Tf= %7.2f keV '%(ti/keV,tf/keV)) 
+
+	x,y,z = particleInitialVtx(particle)
+	logger.log(lvl, ' Initial vertex: x =%7.2f mm, y =%7.2f mm, z =%7.2f mm '%(
+			x/mm,y/mm,z/mm))
+	x,y,z = particleFinalVtx(particle)
+	logger.log(lvl, ' Final vertex: x =%7.2f mm, y =%7.2f mm, z =%7.2f mm '%(
+			x/mm,y/mm,z/mm))
+
+	px,py,pz = particleInitialMomentum(particle)
+	logger.log(lvl, ' Initial momentum: px =%7.2f keV, py =%7.2f keV, z =%7.2f keV '%(
+			px/keV,py/keV,pz/keV))
+
+	px,py,pz = particleFinalMomentum(particle)
+	logger.log(lvl, ' Final momentum: px =%7.2f keV, py =%7.2f keV, z =%7.2f keV '%(
+			px/keV,py/keV,pz/keV))
+
+	
+
+	

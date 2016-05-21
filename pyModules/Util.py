@@ -40,3 +40,17 @@ def inRange(x,xmin,xmax):
 	else:
 		return False
 
+def bookHisto1(lbl,hman,hdes,htitle,nx,xmin,xmax):
+
+	hname = lbl + '.'+ hdes
+	hman.h1(hname, hdes, nx, xmin, xmax)	
+	hman.fetch(hname.GetXaxis().SetTitle(htitle))
+	return hname
+
+def bookHisto2(lbl,hman,hdes,htitle,nx,xmin,xmax,ny,ymin,ymax):
+
+	hname = lbl + '.'+ hdes
+	hman.h1(hname, hdes, nx, xmin, xmax, ny, ymin, ymax)	
+	hman.fetch(hname.GetXaxis().SetTitle(htitle))
+	return hname
+
