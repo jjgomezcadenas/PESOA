@@ -1,10 +1,11 @@
 """
 Utilities
 """
-from __future__ import print_function
+#from __future__ import print_function
 from math import *
 import sys, os
-from Centella.physical_constants import *
+from PhysicalConstants import *
+from system_of_units import *
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -43,14 +44,14 @@ def inRange(x,xmin,xmax):
 def bookHisto1(lbl,hman,hdes,htitle,nx,xmin,xmax):
 
 	hname = lbl + '.'+ hdes
-	hman.h1(hname, hdes, nx, xmin, xmax)	
-	hman.fetch(hname.GetXaxis().SetTitle(htitle))
+	hman.h1(hname, hdes, nx, xmin, xmax)
+	hman.fetch(hname).GetXaxis().SetTitle(htitle)
 	return hname
 
 def bookHisto2(lbl,hman,hdes,htitle,nx,xmin,xmax,ny,ymin,ymax):
 
 	hname = lbl + '.'+ hdes
-	hman.h1(hname, hdes, nx, xmin, xmax, ny, ymin, ymax)	
-	hman.fetch(hname.GetXaxis().SetTitle(htitle))
+	hman.h2(hname, hdes, nx, xmin, xmax, ny, ymin, ymax)	
+	hman.fetch(hname).GetXaxis().SetTitle(htitle)
 	return hname
 

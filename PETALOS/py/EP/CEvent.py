@@ -44,17 +44,17 @@ class CEvent(AAlgo):
 
 		self.m.log(2, "Booking histograms ")
 
-		self.NumberOfParticles_histo_name = bookHisto1(self.label,self.hman,
-			"NumberOfParticles","Number Of Particles",20,0.,20.)
+		self.hNumberOfParticles = bookHisto1(self.label,self.hman,
+			"NumberOfParticles","Number Of Particles",10,0.,10.)
 
-		bookHisto1(self.label,self.hman,
-			"Edep","Energy deposited (keV)",100,0.,100.)
+		self.hTi = bookHisto1(self.label,self.hman,
+			"Ti","Kinetic Energy (keV)",100,0.,100.)
 		
-		bookHisto1(self.label,self.hman,
-			"Z","Z (cm)",50,0.,50.)
+		self.hZ = bookHisto1(self.label,self.hman,
+			"Z","Z (mm)",50,0.,50.)
 
-		bookHisto2(self.label,self.hman,
-			"XY","XY (cm)",25, -50, 50, 25, -50, 50)
+		self.hXY = bookHisto2(self.label,self.hman,
+			"XY","XY (mm)",25, -50, 50, 25, -50, 50)
 		
 		
     ### Counters:
@@ -76,15 +76,13 @@ class CEvent(AAlgo):
 		numberOfParticles = event.GetMCParticles().size()
 
 		self.m.log(3, ' number of particles = %d '%(numberOfParticles))
-		self.hman.fill(self.NumberOfParticles_histo_name, numberOfParticles)
+		self.hman.fill(self.hNumberOfParticles, numberOfParticles)
 
 		primaryParticles = PrimaryParticles(event)
 		self.m.log(3, ' number of primary Particles =%d '%(len(primaryParticles)))
 		
-		npb0 = 0
-		npe = 0
-		nco = 0
-		interactionType = "none"
+		if self.debug == 2:
+			wait()
 
 		for pparticle in primaryParticles:
 			self.m.log(3, '\n+++primary particle+++\n')
@@ -94,21 +92,25 @@ class CEvent(AAlgo):
 			particleName(pparticle), particleTime(pparticle)/ns,ei/keV))
 
 
-			self.particleInfo(self.m,4,pparticle)
+			particleInfo(self.m,4,pparticle)
 
 			x0,y0,z0 = particleInitialVtx(pparticle)
-			px,py,pz = particleInitialMomentum(pparticle)
+			ti,tf = particleKineticEnergy(pparticle)
+			
 
 			self.m.log(3, ' x0 =%7.2f mm, y0 =%7.2f mm, z0 =%7.2f mm '%(
 			x0/mm,y0/mm,z0/mm))
 		
-			self.m.log(3, ' px =%7.2f keV, py =%7.2f keV, z =%7.2f keV '%(
-			px/keV,py/keV,pz/keV))
+			self.m.log(3, ' ti =%7.2f keV, tf =%7.2f keV '%(
+			ti/keV,tf/keV))
 
+			self.hman.fill(self.hXY, x0/mm,y0/mm)
+			self.hman.fill(self.hZ, z0/mm)
+			self.hman.fill(self.hTi, ti/KeV)
 
 			
-		if self.debug == 2: 
-			wait()
+			if self.debug == 3: 
+				wait()
 		
 		self.numOutputEvents += 1
 			

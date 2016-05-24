@@ -42,7 +42,7 @@ CNTJob FLOG S CEvent.log
 
 #---------- histogram file ----------#
 CNTJob HISTOS 1
-CNTJob FHISTOS S /Users/jjgomezcadenas/Documents/Development/NEXT/WORK/CEvent_histos.root
+CNTJob FHISTOS S /Users/jjgomezcadenas/Documents/Development/NEXT/WORK/Waveform_histos.root
 
 #---------- histogram file ----------#
 CNTJob TREES 0
@@ -63,10 +63,12 @@ CNTJob NDEBUG I 10
 
 #--------- ALGORITHMS -------#
 CNTJob ALGOS SV 1
-CEvent
+Waveform
 
 
 #--------- Algo PARAMS -------#
 CEvent VLEVEL I 4
 
-CEvent Debug I 0
+Waveform Debug I 4
+Waveform TBIN I 100
+
